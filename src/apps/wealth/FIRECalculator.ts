@@ -72,7 +72,7 @@ export function render(): HTMLElement {
   inputs.appendChild(mon);
 
   const rate = document.createElement('div'); rate.style.marginTop = 'var(--space-6)';
-  rate.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 20, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  rate.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 100, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(rate);
 
   update();

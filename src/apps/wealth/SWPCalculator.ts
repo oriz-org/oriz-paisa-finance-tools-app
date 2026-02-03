@@ -46,7 +46,7 @@ export function render(): HTMLElement {
   w.appendChild(createSmartInput({ id: 'with', label: 'Monthly Withdrawal', min: 1000, max: 500000, value: state.withdrawal, step: 1000, prefix: '₹', currency: true, onChange: (v) => { state.withdrawal = v; update(); } }));
   inputs.appendChild(w);
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 20, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 100, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
   update();
   return container;

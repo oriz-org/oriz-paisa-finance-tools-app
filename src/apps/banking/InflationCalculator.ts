@@ -39,7 +39,7 @@ export function render(): HTMLElement {
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Calculate Inflation Impact</h3>';
   inputs.appendChild(createSmartInput({ id: 'amt', label: 'Amount', min: 1000, max: 100000000, value: state.amount, step: 10000, prefix: '₹', currency: true, onChange: (v) => { state.amount = v; update(); } }));
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Inflation Rate', min: 1, max: 15, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Inflation Rate', min: 1, max: 50, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
   const y = document.createElement('div'); y.style.marginTop = 'var(--space-6)';
   y.appendChild(createSmartInput({ id: 'years', label: 'Time Period', min: 1, max: 50, value: state.years, suffix: ' years', onChange: (v) => { state.years = v; update(); } }));

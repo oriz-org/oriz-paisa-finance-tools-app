@@ -30,7 +30,7 @@ export function render(): HTMLElement {
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">RD Details</h3>';
   inputs.appendChild(createSmartInput({ id: 'mon', label: 'Monthly Deposit', min: 500, max: 100000, value: state.monthly, step: 500, prefix: '₹', currency: true, onChange: (v) => { state.monthly = v; update(); } }));
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 3, max: 12, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 1, max: 50, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
   const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
   t.appendChild(createSmartInput({ id: 'tenure', label: 'Tenure (Months)', min: 6, max: 120, value: state.tenure, onChange: (v) => { state.tenure = v; update(); } }));

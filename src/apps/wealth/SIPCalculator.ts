@@ -163,7 +163,7 @@ export function render(): HTMLElement {
       id: 'sip-rate',
       label: 'Expected Return Rate',
       min: 1,
-      max: 30,
+      max: 100,
       value: state.rate,
       step: 0.5,
       suffix: '%',

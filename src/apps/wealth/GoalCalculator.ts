@@ -30,13 +30,13 @@ export function render(): HTMLElement {
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Your Goal</h3>';
   inputs.appendChild(createSmartInput({ id: 'goal', label: 'Goal Amount (Today)', min: 10000, max: 100000000, value: state.goal, step: 50000, prefix: '₹', currency: true, onChange: (v) => { state.goal = v; update(); } }));
   const y = document.createElement('div'); y.style.marginTop = 'var(--space-6)';
-  y.appendChild(createSmartInput({ id: 'years', label: 'Time to Goal', min: 1, max: 30, value: state.years, suffix: ' years', onChange: (v) => { state.years = v; update(); } }));
+  y.appendChild(createSmartInput({ id: 'years', label: 'Time to Goal', min: 1, max: 50, value: state.years, suffix: ' years', onChange: (v) => { state.years = v; update(); } }));
   inputs.appendChild(y);
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 25, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 100, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
   const i = document.createElement('div'); i.style.marginTop = 'var(--space-6)';
-  i.appendChild(createSmartInput({ id: 'inf', label: 'Inflation Rate', min: 0, max: 15, value: state.inflation, step: 0.5, suffix: '%', onChange: (v) => { state.inflation = v; update(); } }));
+  i.appendChild(createSmartInput({ id: 'inf', label: 'Inflation Rate', min: 0, max: 50, value: state.inflation, step: 0.5, suffix: '%', onChange: (v) => { state.inflation = v; update(); } }));
   inputs.appendChild(i);
   update();
   return container;

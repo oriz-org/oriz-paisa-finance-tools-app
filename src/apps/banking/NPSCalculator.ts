@@ -48,7 +48,7 @@ export function render(): HTMLElement {
   a.appendChild(createSmartInput({ id: 'age', label: 'Current Age', min: 18, max: 55, value: state.age, suffix: ' years', onChange: (v) => { state.age = v; update(); } }));
   inputs.appendChild(a);
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 6, max: 14, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Expected Return', min: 1, max: 50, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
   update();
   return container;

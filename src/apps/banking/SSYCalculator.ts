@@ -45,7 +45,7 @@ export function render(): HTMLElement {
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">SSY Details</h3>';
   inputs.appendChild(createSmartInput({ id: 'yearly', label: 'Yearly Investment', min: 250, max: 150000, value: state.yearly, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.yearly = v; update(); } }));
   const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate (Current: 8.2%)', min: 5, max: 12, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate (Current: 8.2%)', min: 1, max: 50, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
   inputs.appendChild(r);
 
   const info = document.createElement('div');
