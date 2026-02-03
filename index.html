@@ -39,24 +39,46 @@
   <!-- Puter.js SDK -->
   <script src="https://js.puter.com/v2/"></script>
 
-  <!-- Structured Data (WebSite) -->
+  <!-- Google AdSense Placeholder -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+  <!-- Structured Data (WebSite & Organization) -->
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "FinSuite OS",
-    "url": "https://money.chirag127.in/",
-    "description": "Free financial operating system with 40+ calculators",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://money.chirag127.in/apps/news/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "FinSuite OS",
+      "url": "https://money.chirag127.in/",
+      "description": "Free financial operating system with 40+ calculators",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://money.chirag127.in/apps/news/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "FinSuite OS",
+      "url": "https://money.chirag127.in/",
+      "logo": "https://money.chirag127.in/logo.png",
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "email": "chirag@chirag127.in",
+        "contactType": "customer support"
+      }
     }
-  }
+  ]
   </script>
 </head>
 <body>
   <div id="app"></div>
+  <footer class="hidden">
+    <a href="/privacy-policy">Privacy Policy</a>
+    <a href="/terms">Terms of Service</a>
+    <a href="/about">About Us</a>
+  </footer>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

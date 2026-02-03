@@ -114,6 +114,11 @@ export const routes: Route[] = [
     component: () => import('@/apps/banking/InflationCalculator').then(m => m.render()), drive: 'banking',
     seo: { title: 'Inflation Calculator - Future Value of Money', description: 'Calculate the impact of inflation on your money. Find future value and purchasing power over time.', keywords: ['inflation calculator', 'future value', 'purchasing power', 'cost of living'] }
   },
+  {
+    path: '/apps/banking/p2p', title: 'P2P Lending Calculator', icon: '🤝',
+    component: () => import('@/apps/banking/P2PLendingCalculator').then(m => m.render()), drive: 'banking',
+    seo: { title: 'P2P Lending Calculator - Peer to Peer Investment Returns', description: 'Calculate P2P lending returns with simple interest. Includes RBI caps, platform fees, TDS deductions for peer-to-peer investments.', keywords: ['P2P lending', 'peer to peer lending', 'P2P calculator', 'simple interest', 'RBI P2P'] }
+  },
 
   // ========== DRIVE C: MARKETS (6 Apps) ==========
   {
@@ -231,6 +236,21 @@ export const routes: Route[] = [
     path: '/system/profile', title: 'Profile', icon: '👤',
     component: () => import('@/apps/system/Profile').then(m => m.render()), drive: 'system',
     seo: { title: 'Profile - Your Account', description: 'Manage your FinSuite profile and cloud sync settings.', keywords: ['profile', 'account', 'user', 'settings'] }
+  },
+  {
+    path: '/privacy-policy', title: 'Privacy Policy', icon: '🔒',
+    component: () => import('@/apps/system/PrivacyPolicy').then(m => m.render()), drive: 'system',
+    seo: { title: 'Privacy Policy - FinSuite OS', description: 'Privacy Policy for FinSuite OS financial calculators. Learn how we protect your data and use cookies.', keywords: ['privacy policy', 'data protection', 'cookies', 'GDPR'] }
+  },
+  {
+    path: '/terms', title: 'Terms of Service', icon: '📜',
+    component: () => import('@/apps/system/TermsOfService').then(m => m.render()), drive: 'system',
+    seo: { title: 'Terms of Service - FinSuite OS', description: 'Terms of Service for FinSuite OS. Read our disclaimer and usage terms for financial calculators.', keywords: ['terms of service', 'disclaimer', 'legal', 'usage terms'] }
+  },
+  {
+    path: '/about', title: 'About', icon: 'ℹ️',
+    component: () => import('@/apps/system/About').then(m => m.render()), drive: 'system',
+    seo: { title: 'About FinSuite OS - Free Financial Calculators', description: 'About FinSuite OS - 40+ free financial calculators, market data, and AI insights. Contact information and features.', keywords: ['about', 'contact', 'financial calculators', 'India'] }
   },
 ];
 

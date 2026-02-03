@@ -44,6 +44,14 @@ class Shell {
    */
   private render(): string {
     return `
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-btn" id="sidebar-toggle" aria-label="Toggle menu">
+        ☰
+      </button>
+
+      <!-- Sidebar Overlay -->
+      <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
       <!-- Sidebar -->
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-brand">
@@ -58,11 +66,6 @@ class Shell {
       <main class="main" id="main-content">
         <!-- Content loaded by router -->
       </main>
-
-      <!-- Mobile Menu Toggle -->
-      <button class="btn btn--icon sidebar-toggle" id="sidebar-toggle" aria-label="Toggle menu">
-        ☰
-      </button>
 
       <!-- Dock -->
       <nav class="dock" id="dock">
@@ -144,12 +147,33 @@ class Shell {
     // Sidebar toggle for mobile
     const toggleBtn = document.getElementById('sidebar-toggle');
     const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    const closeSidebar = () => {
+      this.sidebarOpen = false;
+      sidebar?.classList.remove('open');
+      overlay?.classList.remove('active');
+    };
+
+    const openSidebar = () => {
+      this.sidebarOpen = true;
+      sidebar?.classList.add('open');
+      overlay?.classList.add('active');
+    };
 
     if (toggleBtn && sidebar) {
       toggleBtn.addEventListener('click', () => {
-        this.sidebarOpen = !this.sidebarOpen;
-        sidebar.classList.toggle('open', this.sidebarOpen);
+        if (this.sidebarOpen) {
+          closeSidebar();
+        } else {
+          openSidebar();
+        }
       });
+    }
+
+    // Close sidebar when clicking overlay
+    if (overlay) {
+      overlay.addEventListener('click', closeSidebar);
     }
 
     // Close sidebar on mobile when clicking outside
@@ -161,10 +185,10 @@ class Shell {
         this.sidebarOpen &&
         !sidebar.contains(target) &&
         !toggleBtn.contains(target) &&
+        !overlay?.contains(target) &&
         window.innerWidth < 1024
       ) {
-        this.sidebarOpen = false;
-        sidebar.classList.remove('open');
+        closeSidebar();
       }
     });
   }
@@ -188,9 +212,13 @@ class Shell {
     // Close sidebar on mobile after navigation
     if (window.innerWidth < 1024) {
       const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
       if (sidebar) {
         sidebar.classList.remove('open');
         this.sidebarOpen = false;
+      }
+      if (overlay) {
+        overlay.classList.remove('active');
       }
     }
   }

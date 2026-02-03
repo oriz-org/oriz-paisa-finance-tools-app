@@ -15,12 +15,16 @@ import {
   Tooltip,
   Legend,
   Filler,
+  LineController,
+  BarController,
+  DoughnutController,
+  PieController,
   type ChartConfiguration,
   type ChartData,
   type ChartOptions,
 } from 'chart.js';
 
-// Register Chart.js components
+// Register Chart.js components including controllers
 Chart.register(
   CategoryScale,
   LinearScale,
@@ -31,7 +35,11 @@ Chart.register(
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
+  LineController,
+  BarController,
+  DoughnutController,
+  PieController
 );
 
 // Theme colors
