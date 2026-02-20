@@ -115,7 +115,9 @@ export async function getCryptoPriceHistory(
 /**
  * Search cryptocurrencies
  */
-export async function searchCrypto(query: string): Promise<Array<{ id: string; name: string; symbol: string }>> {
+export async function searchCrypto(
+  query: string
+): Promise<Array<{ id: string; name: string; symbol: string }>> {
   try {
     const response = await axios.get(`${COINGECKO_BASE}/search`, {
       params: { query },
@@ -175,11 +177,7 @@ export async function getExchangeRates(baseCurrency: string = 'INR'): Promise<Ex
 /**
  * Convert currency
  */
-export async function convertCurrency(
-  amount: number,
-  from: string,
-  to: string
-): Promise<number> {
+export async function convertCurrency(amount: number, from: string, to: string): Promise<number> {
   try {
     const response = await axios.get(`${FRANKFURTER_BASE}/latest`, {
       params: { amount, from, to },

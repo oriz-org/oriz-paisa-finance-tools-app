@@ -125,17 +125,18 @@ export function render(): HTMLElement {
 
   async function getAIInsight(result: ReturnType<typeof calculateSIP>): Promise<void> {
     try {
-        // Only ask if meaningful change? For now just ask.
-        const prompt = `I am investing ₹${formatIndianNumber(state.monthly)} monthly in SIP for ${state.years} years at ${state.rate}% expected returns. My total investment will be ₹${formatIndianNumber(result.investedAmount)} and expected value is ₹${formatIndianNumber(result.totalValue)}. Give me 2 short insights about this plan.`;
-        const insight = await askAI(prompt, 'advisor');
-        updateAIInsight(aiBox, insight);
+      // Only ask if meaningful change? For now just ask.
+      const prompt = `I am investing ₹${formatIndianNumber(state.monthly)} monthly in SIP for ${state.years} years at ${state.rate}% expected returns. My total investment will be ₹${formatIndianNumber(result.investedAmount)} and expected value is ₹${formatIndianNumber(result.totalValue)}. Give me 2 short insights about this plan.`;
+      const insight = await askAI(prompt, 'advisor');
+      updateAIInsight(aiBox, insight);
     } catch {
-        updateAIInsight(aiBox, 'AI insights unavailable.');
+      updateAIInsight(aiBox, 'AI insights unavailable.');
     }
   }
 
   // Create inputs
-  inputsContainer.innerHTML = '<h3 style="margin-bottom: var(--space-4); color: var(--text-primary);">Investment Parameters</h3>';
+  inputsContainer.innerHTML =
+    '<h3 style="margin-bottom: var(--space-4); color: var(--text-primary);">Investment Parameters</h3>';
 
   // Monthly investment slider
   inputsContainer.appendChild(

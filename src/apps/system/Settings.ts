@@ -146,7 +146,6 @@ export async function render(): Promise<HTMLElement> {
       });
     }
 
-
     // Event handlers
     contentEl.querySelector('#theme-select')?.addEventListener('change', (e) => {
       settings.theme = (e.target as HTMLSelectElement).value;

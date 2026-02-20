@@ -56,7 +56,8 @@ export function render(): HTMLElement {
 
     askBtn.disabled = true;
     askBtn.textContent = '⏳ Thinking...';
-    responseEl.innerHTML = '<div class="ai-insight"><div class="ai-insight-content"><div class="spinner" style="margin: 0 auto;"></div></div></div>';
+    responseEl.innerHTML =
+      '<div class="ai-insight"><div class="ai-insight-content"><div class="spinner" style="margin: 0 auto;"></div></div></div>';
 
     try {
       const role = roleSelect.value as AIRole;

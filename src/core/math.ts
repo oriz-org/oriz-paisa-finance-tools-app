@@ -51,9 +51,7 @@ export function calculateSIP(
 
   const investedAmount = monthlyInvestment * months;
   const totalValue =
-    monthlyInvestment *
-    ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) *
-    (1 + monthlyRate);
+    monthlyInvestment * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
   const wealthGained = totalValue - investedAmount;
 
   return {
@@ -170,11 +168,7 @@ export function calculateStepUpSIP(
 /**
  * Calculate CAGR (Compound Annual Growth Rate)
  */
-export function calculateCAGR(
-  initialValue: number,
-  finalValue: number,
-  years: number
-): number {
+export function calculateCAGR(initialValue: number, finalValue: number, years: number): number {
   if (initialValue <= 0 || years <= 0) return 0;
   const cagr = (Math.pow(finalValue / initialValue, 1 / years) - 1) * 100;
   return Math.round(cagr * 100) / 100;
@@ -327,7 +321,7 @@ export function calculateFIRE(
   return {
     targetCorpus: Math.round(targetCorpus),
     yearsToFIRE: Math.round((months / 12) * 10) / 10,
-    monthlyWithdrawalSafe: Math.round(targetCorpus * (safeWithdrawalRate / 100) / 12),
+    monthlyWithdrawalSafe: Math.round((targetCorpus * (safeWithdrawalRate / 100)) / 12),
     yearlyBreakdown,
   };
 }
@@ -364,8 +358,7 @@ export function calculateEMI(
   const emi =
     principal *
     monthlyRate *
-    (Math.pow(1 + monthlyRate, tenureMonths) /
-      (Math.pow(1 + monthlyRate, tenureMonths) - 1));
+    (Math.pow(1 + monthlyRate, tenureMonths) / (Math.pow(1 + monthlyRate, tenureMonths) - 1));
 
   const totalPayment = emi * tenureMonths;
   const totalInterest = totalPayment - principal;
@@ -594,9 +587,7 @@ export function calculateNPS(
   for (let year = 1; year <= years; year++) {
     const n = year * 12;
     const corpus =
-      monthlyContribution *
-      ((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) *
-      (1 + monthlyRate);
+      monthlyContribution * ((Math.pow(1 + monthlyRate, n) - 1) / monthlyRate) * (1 + monthlyRate);
     yearlyBreakdown.push({
       year,
       contribution: Math.round(monthlyContribution * n),

@@ -43,7 +43,8 @@ export async function render(): Promise<HTMLElement> {
       });
     });
   } catch {
-    listEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load news</div>';
+    listEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load news</div>';
   }
 
   return container;
@@ -52,7 +53,9 @@ export async function render(): Promise<HTMLElement> {
 function renderStories(stories: HNStory[]): string {
   return `
     <div class="flex flex-col gap-4">
-      ${stories.map((s, i) => `
+      ${stories
+        .map(
+          (s, i) => `
         <div class="glass-card news-card" style="padding: var(--space-5);">
           <div style="display: flex; gap: var(--space-4);">
             <span style="color: var(--text-tertiary); font-size: var(--text-lg); font-weight: 600; min-width: 30px;">${i + 1}</span>
@@ -70,7 +73,9 @@ function renderStories(stories: HNStory[]): string {
             </div>
           </div>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
   `;
 }

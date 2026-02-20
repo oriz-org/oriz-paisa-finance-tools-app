@@ -17,9 +17,14 @@ export async function render(): Promise<HTMLElement> {
 
   try {
     const articles = await getAINews();
-    newsEl.innerHTML = articles.length > 0 ? `
+    newsEl.innerHTML =
+      articles.length > 0
+        ? `
       <div class="grid grid--auto gap-4">
-        ${articles.slice(0, 20).map((a) => `
+        ${articles
+          .slice(0, 20)
+          .map(
+            (a) => `
           <a href="${a.url}" target="_blank" class="glass-card" style="padding: var(--space-5); text-decoration: none;">
             <div style="display: flex; gap: var(--space-3);">
               ${a.social_image ? `<img src="${a.social_image}" alt="" style="width: 80px; height: 60px; object-fit: cover; border-radius: var(--radius-md);">` : ''}
@@ -31,11 +36,15 @@ export async function render(): Promise<HTMLElement> {
               </div>
             </div>
           </a>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
-    ` : '<p style="color: var(--text-secondary); text-align: center;">No AI articles found</p>';
+    `
+        : '<p style="color: var(--text-secondary); text-align: center;">No AI articles found</p>';
   } catch {
-    newsEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load AI news</div>';
+    newsEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load AI news</div>';
   }
 
   return container;

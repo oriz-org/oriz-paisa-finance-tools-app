@@ -46,7 +46,9 @@ export async function render(): Promise<HTMLElement> {
     } else {
       contentEl.innerHTML = `
         <div class="grid grid--auto gap-4 mb-6">
-          ${watchedCryptos.map((c) => `
+          ${watchedCryptos
+            .map(
+              (c) => `
             <div class="glass-card" style="padding: var(--space-4);">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: center; gap: var(--space-3);">
@@ -65,7 +67,9 @@ export async function render(): Promise<HTMLElement> {
               </div>
               <button class="btn btn--ghost btn--sm mt-3" data-remove="${c.id}" style="width: 100%;">Remove</button>
             </div>
-          `).join('')}
+          `
+            )
+            .join('')}
         </div>
       `;
     }
@@ -77,12 +81,18 @@ export async function render(): Promise<HTMLElement> {
     addSection.innerHTML = `
       <h3 style="margin-bottom: var(--space-4);">Add to Watchlist</h3>
       <div class="grid grid--auto gap-2" style="max-height: 300px; overflow-y: auto;">
-        ${allCryptos.filter((c) => !watchlist.includes(c.id)).slice(0, 20).map((c) => `
+        ${allCryptos
+          .filter((c) => !watchlist.includes(c.id))
+          .slice(0, 20)
+          .map(
+            (c) => `
           <button class="btn btn--secondary btn--sm" data-add="${c.id}" style="justify-content: flex-start; gap: var(--space-2);">
             <img src="${c.image}" alt="${c.name}" style="width: 16px; height: 16px; border-radius: 50%;">
             ${c.name}
           </button>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
     `;
     contentEl.appendChild(addSection);

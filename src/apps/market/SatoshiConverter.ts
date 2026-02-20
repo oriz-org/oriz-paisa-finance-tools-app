@@ -35,10 +35,22 @@ export async function render(): Promise<HTMLElement> {
     const sats = btc * SATS_PER_BTC;
 
     resultsEl.innerHTML = '';
-    const stats = document.createElement('div'); stats.className = 'stats-grid';
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid';
     stats.appendChild(createResultCard({ label: 'Bitcoin (BTC)', value: btc.toFixed(8) }));
-    stats.appendChild(createResultCard({ label: 'Satoshis (sats)', value: Math.round(sats).toLocaleString('en-IN'), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Current BTC Price', value: `₹${btcPrice.toLocaleString('en-IN')}` }));
+    stats.appendChild(
+      createResultCard({
+        label: 'Satoshis (sats)',
+        value: Math.round(sats).toLocaleString('en-IN'),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Current BTC Price',
+        value: `₹${btcPrice.toLocaleString('en-IN')}`,
+      })
+    );
     resultsEl.appendChild(stats);
 
     const info = document.createElement('div');
@@ -55,17 +67,22 @@ export async function render(): Promise<HTMLElement> {
   }
 
   inputsEl.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Enter Amount</h3>';
-  inputsEl.appendChild(createSmartInput({
-    id: 'inr',
-    label: 'Amount in INR',
-    min: 100,
-    max: 10000000,
-    value: state.inr,
-    step: 1000,
-    prefix: '₹',
-    currency: true,
-    onChange: (v) => { state.inr = v; update(); },
-  }));
+  inputsEl.appendChild(
+    createSmartInput({
+      id: 'inr',
+      label: 'Amount in INR',
+      min: 100,
+      max: 10000000,
+      value: state.inr,
+      step: 1000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.inr = v;
+        update();
+      },
+    })
+  );
 
   update();
   return container;

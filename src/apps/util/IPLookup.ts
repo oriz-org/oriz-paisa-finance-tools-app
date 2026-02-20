@@ -59,7 +59,8 @@ export async function render(): Promise<HTMLElement> {
       throw new Error('No data');
     }
   } catch {
-    infoEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to fetch IP info</div>';
+    infoEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to fetch IP info</div>';
   }
 
   return container;

@@ -113,7 +113,19 @@ class Shell {
    * Render sidebar navigation grouped by drive
    */
   private renderSidebarNav(): string {
-    const drives: Route['drive'][] = ['system', 'wealth', 'banking', 'loans', 'invest', 'tax', 'salary', 'gen', 'market', 'news', 'util'];
+    const drives: Route['drive'][] = [
+      'system',
+      'wealth',
+      'banking',
+      'loans',
+      'invest',
+      'tax',
+      'salary',
+      'gen',
+      'market',
+      'news',
+      'util',
+    ];
 
     return drives
       .map((drive) => {

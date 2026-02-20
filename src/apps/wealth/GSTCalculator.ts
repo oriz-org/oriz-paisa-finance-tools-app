@@ -2,7 +2,12 @@
  * FinSuite OS - GST Calculator
  */
 import { calculateGST, formatCurrency } from '@/core/math';
-import { createSmartInput, createResultCard, createToggle, createSelect } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createToggle,
+  createSelect,
+} from '@/components/ui/SmartInput';
 
 export function render(): HTMLElement {
   const state = { amount: 10000, rate: 18, inclusive: false };
@@ -20,10 +25,21 @@ export function render(): HTMLElement {
   function update(): void {
     const result = calculateGST(state.amount, state.rate, state.inclusive);
     results.innerHTML = '';
-    const stats = document.createElement('div'); stats.className = 'stats-grid';
-    stats.appendChild(createResultCard({ label: 'Original Amount', value: formatCurrency(result.originalAmount) }));
-    stats.appendChild(createResultCard({ label: `GST @ ${state.rate}%`, value: formatCurrency(result.gstAmount), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Total Amount', value: formatCurrency(result.totalAmount) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid';
+    stats.appendChild(
+      createResultCard({ label: 'Original Amount', value: formatCurrency(result.originalAmount) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: `GST @ ${state.rate}%`,
+        value: formatCurrency(result.gstAmount),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Total Amount', value: formatCurrency(result.totalAmount) })
+    );
     results.appendChild(stats);
 
     const breakdown = document.createElement('div');
@@ -40,16 +56,57 @@ export function render(): HTMLElement {
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">GST Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'amt', label: 'Amount', min: 100, max: 10000000, value: state.amount, step: 100, prefix: '₹', currency: true, onChange: (v) => { state.amount = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'amt',
+      label: 'Amount',
+      min: 100,
+      max: 10000000,
+      value: state.amount,
+      step: 100,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.amount = v;
+        update();
+      },
+    })
+  );
 
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSelect({ id: 'rate', label: 'GST Rate', value: String(state.rate), options: [
-    { value: '5', label: '5%' }, { value: '12', label: '12%' }, { value: '18', label: '18%' }, { value: '28', label: '28%' }
-  ], onChange: (v) => { state.rate = parseInt(v); update(); } }));
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSelect({
+      id: 'rate',
+      label: 'GST Rate',
+      value: String(state.rate),
+      options: [
+        { value: '5', label: '5%' },
+        { value: '12', label: '12%' },
+        { value: '18', label: '18%' },
+        { value: '28', label: '28%' },
+      ],
+      onChange: (v) => {
+        state.rate = parseInt(v);
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
 
-  const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
-  t.appendChild(createToggle({ id: 'inc', label: 'GST Inclusive (Extract from total)', checked: state.inclusive, onChange: (v) => { state.inclusive = v; update(); } }));
+  const t = document.createElement('div');
+  t.style.marginTop = 'var(--space-6)';
+  t.appendChild(
+    createToggle({
+      id: 'inc',
+      label: 'GST Inclusive (Extract from total)',
+      checked: state.inclusive,
+      onChange: (v) => {
+        state.inclusive = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(t);
 
   update();

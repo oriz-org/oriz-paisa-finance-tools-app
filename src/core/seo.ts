@@ -70,7 +70,10 @@ export function updateSEO(config: SEOConfig): void {
 /**
  * Generate JSON-LD structured data for a calculator page
  */
-export function addStructuredData(type: 'Calculator' | 'WebApplication' | 'Article', data: Record<string, unknown>): void {
+export function addStructuredData(
+  type: 'Calculator' | 'WebApplication' | 'Article',
+  data: Record<string, unknown>
+): void {
   // Remove existing structured data
   document.querySelectorAll('script[type="application/ld+json"]').forEach((el) => el.remove());
 

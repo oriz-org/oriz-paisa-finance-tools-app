@@ -82,7 +82,8 @@ export async function render(): Promise<HTMLElement> {
 
     renderContent();
   } catch {
-    contentEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load gold prices</div>';
+    contentEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load gold prices</div>';
   }
 
   return container;

@@ -83,9 +83,7 @@ export async function getWeather(lat: number, lon: number): Promise<WeatherData 
 /**
  * Geocode a city name to coordinates
  */
-export async function geocodeCity(
-  city: string
-): Promise<GeoLocation | null> {
+export async function geocodeCity(city: string): Promise<GeoLocation | null> {
   try {
     const response = await axios.get('https://geocoding-api.open-meteo.com/v1/search', {
       params: { name: city, count: 1 },
@@ -177,7 +175,8 @@ export async function getIPInfo(): Promise<IPInfo | null> {
   try {
     const response = await axios.get('http://ip-api.com/json/', {
       params: {
-        fields: 'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
+        fields:
+          'status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,query',
       },
     });
 
@@ -387,10 +386,7 @@ export async function runSpeedTest(): Promise<SpeedTestResult> {
 /**
  * Generate QR code URL using a public API
  */
-export function generateQRCode(
-  data: string,
-  size: number = 200
-): string {
+export function generateQRCode(data: string, size: number = 200): string {
   const encodedData = encodeURIComponent(data);
   return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedData}`;
 }

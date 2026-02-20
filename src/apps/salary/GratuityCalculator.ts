@@ -4,9 +4,20 @@
  */
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateGratuity(lastBasic: number, lastDA: number, years: number, months: number, isGovernment: boolean): {
+function calculateGratuity(
+  lastBasic: number,
+  lastDA: number,
+  years: number,
+  months: number,
+  isGovernment: boolean
+): {
   gratuity: number;
   formula: string;
   eligible: boolean;
@@ -51,14 +62,22 @@ export function render(): HTMLElement {
   const results = container.querySelector('#results') as HTMLElement;
 
   function update(): void {
-    const result = calculateGratuity(state.basic, state.da, state.years, state.months, state.isGovernment);
+    const result = calculateGratuity(
+      state.basic,
+      state.da,
+      state.years,
+      state.months,
+      state.isGovernment
+    );
     results.innerHTML = '';
 
     // Eligibility status
     const status = document.createElement('div');
     status.className = 'glass-card mb-6';
     status.style.padding = 'var(--space-6)';
-    status.style.borderLeft = result.eligible ? '4px solid var(--accent-gain)' : '4px solid var(--accent-cost)';
+    status.style.borderLeft = result.eligible
+      ? '4px solid var(--accent-gain)'
+      : '4px solid var(--accent-cost)';
     status.innerHTML = `
       <div style="display: flex; align-items: center; gap: var(--space-4);">
         <span style="font-size: 2rem;">${result.eligible ? '✅' : '⚠️'}</span>
@@ -74,11 +93,28 @@ export function render(): HTMLElement {
     `;
     results.appendChild(status);
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Gratuity Amount', value: formatCurrency(result.gratuity), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Tax Exempt', value: formatCurrency(result.taxExempt), subtext: 'Up to ₹20 lakh' }));
-    stats.appendChild(createResultCard({ label: 'Taxable Amount', value: formatCurrency(result.taxable) }));
-    stats.appendChild(createResultCard({ label: 'Service Period', value: `${state.years}y ${state.months}m` }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Gratuity Amount',
+        value: formatCurrency(result.gratuity),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Tax Exempt',
+        value: formatCurrency(result.taxExempt),
+        subtext: 'Up to ₹20 lakh',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Taxable Amount', value: formatCurrency(result.taxable) })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Service Period', value: `${state.years}y ${state.months}m` })
+    );
     results.appendChild(stats);
 
     // Formula explanation
@@ -115,8 +151,12 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Gratuity calculation: Basic ₹${formatIndianNumber(state.basic)}, DA ₹${formatIndianNumber(state.da)}, ${state.years} years ${state.months} months service. Gratuity: ₹${formatIndianNumber(result.gratuity)}. ${state.isGovernment ? 'Government' : 'Private'} sector. Explain tax implications and eligibility rules.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Gratuity calculation: Basic ₹${formatIndianNumber(state.basic)}, DA ₹${formatIndianNumber(state.da)}, ${state.years} years ${state.months} months service. Gratuity: ₹${formatIndianNumber(result.gratuity)}. ${state.isGovernment ? 'Government' : 'Private'} sector. Explain tax implications and eligibility rules.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Employment Details</h3>';
@@ -131,7 +171,10 @@ export function render(): HTMLElement {
   sectorCheck.type = 'checkbox';
   sectorCheck.id = 'isGovt';
   sectorCheck.checked = state.isGovernment;
-  sectorCheck.onchange = (e) => { state.isGovernment = (e.target as HTMLInputElement).checked; update(); };
+  sectorCheck.onchange = (e) => {
+    state.isGovernment = (e.target as HTMLInputElement).checked;
+    update();
+  };
   const sectorLabel = document.createElement('label');
   sectorLabel.htmlFor = 'isGovt';
   sectorLabel.textContent = 'Government Employee';
@@ -140,18 +183,79 @@ export function render(): HTMLElement {
   sectorDiv.appendChild(sectorLabel);
   inputs.appendChild(sectorDiv);
 
-  inputs.appendChild(createSmartInput({ id: 'basic', label: 'Last Drawn Basic (Monthly)', min: 5000, max: 1000000, value: state.basic, step: 1000, prefix: '₹', currency: true, onChange: (v) => { state.basic = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'basic',
+      label: 'Last Drawn Basic (Monthly)',
+      min: 5000,
+      max: 1000000,
+      value: state.basic,
+      step: 1000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.basic = v;
+        update();
+      },
+    })
+  );
 
-  const da = document.createElement('div'); da.style.marginTop = 'var(--space-6)';
-  da.appendChild(createSmartInput({ id: 'da', label: 'Dearness Allowance (Monthly)', min: 0, max: 500000, value: state.da, step: 500, prefix: '₹', currency: true, onChange: (v) => { state.da = v; update(); } }));
+  const da = document.createElement('div');
+  da.style.marginTop = 'var(--space-6)';
+  da.appendChild(
+    createSmartInput({
+      id: 'da',
+      label: 'Dearness Allowance (Monthly)',
+      min: 0,
+      max: 500000,
+      value: state.da,
+      step: 500,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.da = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(da);
 
-  const y = document.createElement('div'); y.style.marginTop = 'var(--space-6)';
-  y.appendChild(createSmartInput({ id: 'years', label: 'Years of Service', min: 0, max: 50, value: state.years, step: 1, suffix: ' years', onChange: (v) => { state.years = v; update(); } }));
+  const y = document.createElement('div');
+  y.style.marginTop = 'var(--space-6)';
+  y.appendChild(
+    createSmartInput({
+      id: 'years',
+      label: 'Years of Service',
+      min: 0,
+      max: 50,
+      value: state.years,
+      step: 1,
+      suffix: ' years',
+      onChange: (v) => {
+        state.years = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(y);
 
-  const m = document.createElement('div'); m.style.marginTop = 'var(--space-6)';
-  m.appendChild(createSmartInput({ id: 'months', label: 'Additional Months', min: 0, max: 11, value: state.months, step: 1, suffix: ' months', onChange: (v) => { state.months = v; update(); } }));
+  const m = document.createElement('div');
+  m.style.marginTop = 'var(--space-6)';
+  m.appendChild(
+    createSmartInput({
+      id: 'months',
+      label: 'Additional Months',
+      min: 0,
+      max: 11,
+      value: state.months,
+      step: 1,
+      suffix: ' months',
+      onChange: (v) => {
+        state.months = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(m);
 
   update();

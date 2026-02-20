@@ -36,13 +36,15 @@ export async function render(): Promise<HTMLElement> {
     try {
       const location = await geocodeCity(city);
       if (!location) {
-        weatherEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">City not found</div>';
+        weatherEl.innerHTML =
+          '<div class="glass-card" style="padding: var(--space-6); text-align: center;">City not found</div>';
         return;
       }
 
       const weather = await getWeather(location.latitude, location.longitude);
       if (!weather) {
-        weatherEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Weather data unavailable</div>';
+        weatherEl.innerHTML =
+          '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Weather data unavailable</div>';
         return;
       }
 
@@ -70,7 +72,10 @@ export async function render(): Promise<HTMLElement> {
         <div class="glass-card" style="padding: var(--space-5);">
           <h3 style="margin-bottom: var(--space-4);">7-Day Forecast</h3>
           <div style="display: flex; gap: var(--space-4); overflow-x: auto;">
-            ${weather.daily.time.slice(0, 7).map((date, i) => `
+            ${weather.daily.time
+              .slice(0, 7)
+              .map(
+                (date, i) => `
               <div style="text-align: center; min-width: 80px;">
                 <div style="font-size: var(--text-sm); color: var(--text-tertiary);">${new Date(date).toLocaleDateString('en-IN', { weekday: 'short' })}</div>
                 <div style="font-size: 28px; margin: var(--space-2) 0;">${getWeatherIcon(weather.daily.weatherCode[i], true)}</div>
@@ -79,19 +84,24 @@ export async function render(): Promise<HTMLElement> {
                   <span style="color: var(--text-tertiary);">${weather.daily.temperatureMin[i]}°</span>
                 </div>
               </div>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
         </div>
       `;
     } catch {
-      weatherEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to fetch weather</div>';
+      weatherEl.innerHTML =
+        '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to fetch weather</div>';
     } finally {
       getWeatherBtn.disabled = false;
     }
   }
 
   getWeatherBtn.addEventListener('click', fetchWeather);
-  cityInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') fetchWeather(); });
+  cityInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') fetchWeather();
+  });
   fetchWeather();
 
   return container;

@@ -80,14 +80,17 @@ export function renderFooter(config: FooterConfig = {}): string {
       <div class="footer-container">
         <!-- Footer Columns -->
         <div class="footer-columns">
-          ${FOOTER_SECTIONS.map(section => `
+          ${FOOTER_SECTIONS.map(
+            (section) => `
             <div class="footer-column">
               <h3 class="footer-column-title">
                 <span class="footer-column-icon">${section.icon}</span>
                 ${section.title}
               </h3>
               <ul class="footer-links">
-                ${section.links.map(link => `
+                ${section.links
+                  .map(
+                    (link) => `
                   <li>
                     <a href="${link.path}"
                        class="footer-link"
@@ -95,10 +98,13 @@ export function renderFooter(config: FooterConfig = {}): string {
                       ${link.label}
                     </a>
                   </li>
-                `).join('')}
+                `
+                  )
+                  .join('')}
               </ul>
             </div>
-          `).join('')}
+          `
+          ).join('')}
         </div>
 
         <!-- Footer Bottom -->
@@ -108,7 +114,9 @@ export function renderFooter(config: FooterConfig = {}): string {
             <span>&copy; ${copyrightYear} ${brandName}. All rights reserved.</span>
           </div>
 
-          ${showSocialLinks ? `
+          ${
+            showSocialLinks
+              ? `
             <div class="footer-social">
               <a href="https://github.com/chirag127"
                  target="_blank"
@@ -129,7 +137,9 @@ export function renderFooter(config: FooterConfig = {}): string {
                 </svg>
               </a>
             </div>
-          ` : ''}
+          `
+              : ''
+          }
 
           <div class="footer-made-with">
             <span>Made with</span>

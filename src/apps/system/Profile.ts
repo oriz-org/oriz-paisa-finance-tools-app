@@ -84,12 +84,16 @@ export async function render(): Promise<HTMLElement> {
     <div class="glass-card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
       <h3 style="margin-bottom: var(--space-5);">🎯 Financial Goals</h3>
       <div id="goals-list" style="margin-bottom: var(--space-4);">
-        ${profile.goals.map((g, i) => `
+        ${profile.goals
+          .map(
+            (g, i) => `
           <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3); background: var(--glass-bg); border-radius: var(--radius-md); margin-bottom: var(--space-2);">
             <span>${g}</span>
             <button class="btn btn--ghost btn--sm" data-remove="${i}">✕</button>
           </div>
-        `).join('')}
+        `
+          )
+          .join('')}
       </div>
       <div style="display: flex; gap: var(--space-3);">
         <input type="text" class="input flex-1" id="new-goal" placeholder="Add a goal (e.g., Buy a house, Retire early)">
@@ -101,17 +105,27 @@ export async function render(): Promise<HTMLElement> {
   `;
 
   // Event handlers
-  contentEl.querySelector('#name')?.addEventListener('change', (e) => { profile.name = (e.target as HTMLInputElement).value; });
-  contentEl.querySelector('#age')?.addEventListener('change', (e) => { profile.age = parseInt((e.target as HTMLInputElement).value); });
-  contentEl.querySelector('#income')?.addEventListener('change', (e) => { profile.income = parseInt((e.target as HTMLInputElement).value); });
-  contentEl.querySelector('#risk')?.addEventListener('change', (e) => { profile.riskTolerance = (e.target as HTMLSelectElement).value as typeof profile.riskTolerance; });
+  contentEl.querySelector('#name')?.addEventListener('change', (e) => {
+    profile.name = (e.target as HTMLInputElement).value;
+  });
+  contentEl.querySelector('#age')?.addEventListener('change', (e) => {
+    profile.age = parseInt((e.target as HTMLInputElement).value);
+  });
+  contentEl.querySelector('#income')?.addEventListener('change', (e) => {
+    profile.income = parseInt((e.target as HTMLInputElement).value);
+  });
+  contentEl.querySelector('#risk')?.addEventListener('change', (e) => {
+    profile.riskTolerance = (e.target as HTMLSelectElement).value as typeof profile.riskTolerance;
+  });
   contentEl.querySelector('#save-btn')?.addEventListener('click', saveProfile);
 
   contentEl.querySelectorAll('[data-remove]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const idx = parseInt((btn as HTMLElement).dataset.remove!);
       profile.goals.splice(idx, 1);
-      render().then((el) => { contentEl.replaceWith(el.querySelector('#profile-content')!); });
+      render().then((el) => {
+        contentEl.replaceWith(el.querySelector('#profile-content')!);
+      });
     });
   });
 
@@ -120,7 +134,9 @@ export async function render(): Promise<HTMLElement> {
     if (input.value.trim()) {
       profile.goals.push(input.value.trim());
       input.value = '';
-      render().then((el) => { contentEl.replaceWith(el.querySelector('#profile-content')!); });
+      render().then((el) => {
+        contentEl.replaceWith(el.querySelector('#profile-content')!);
+      });
     }
   });
 

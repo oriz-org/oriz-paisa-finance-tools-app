@@ -17,9 +17,13 @@ export async function render(): Promise<HTMLElement> {
 
   try {
     const sentiment = await getWSBSentiment();
-    listEl.innerHTML = sentiment.length > 0 ? renderSentiment(sentiment) : '<div class="glass-card" style="padding: var(--space-6); text-align: center;">No sentiment data available</div>';
+    listEl.innerHTML =
+      sentiment.length > 0
+        ? renderSentiment(sentiment)
+        : '<div class="glass-card" style="padding: var(--space-6); text-align: center;">No sentiment data available</div>';
   } catch {
-    listEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center; color: var(--text-secondary);">Failed to load sentiment data</div>';
+    listEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center; color: var(--text-secondary);">Failed to load sentiment data</div>';
   }
 
   return container;
@@ -28,7 +32,10 @@ export async function render(): Promise<HTMLElement> {
 function renderSentiment(data: StockSentiment[]): string {
   return `
     <div class="grid grid--auto gap-4">
-      ${data.slice(0, 20).map((s) => `
+      ${data
+        .slice(0, 20)
+        .map(
+          (s) => `
         <div class="glass-card" style="padding: var(--space-5);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
             <span style="font-size: var(--text-xl); font-weight: 700; font-family: var(--font-mono);">${s.ticker}</span>
@@ -52,7 +59,9 @@ function renderSentiment(data: StockSentiment[]): string {
             "></div>
           </div>
         </div>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
     <p style="margin-top: var(--space-4); font-size: var(--text-xs); color: var(--text-tertiary); text-align: center;">Data from TradeSentie API (WSB Reddit)</p>
   `;

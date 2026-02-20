@@ -20,7 +20,10 @@ export async function render(): Promise<HTMLElement> {
 
   try {
     const currencies = await getAvailableCurrencies();
-    const currencyOptions = Object.entries(currencies).map(([code, name]) => ({ value: code, label: `${code} - ${name}` }));
+    const currencyOptions = Object.entries(currencies).map(([code, name]) => ({
+      value: code,
+      label: `${code} - ${name}`,
+    }));
 
     const state = { amount: 1000, from: 'INR', to: 'USD', result: 0 };
 
@@ -28,7 +31,8 @@ export async function render(): Promise<HTMLElement> {
       const resultEl = converterEl.querySelector('#result') as HTMLElement;
       if (resultEl) resultEl.innerHTML = '<div class="spinner" style="margin: 0 auto;"></div>';
       state.result = await convertCurrency(state.amount, state.from, state.to);
-      if (resultEl) resultEl.innerHTML = `
+      if (resultEl)
+        resultEl.innerHTML = `
         <div style="font-size: var(--text-4xl); font-family: var(--font-mono); font-weight: 700; color: var(--accent-primary);">
           ${state.result.toLocaleString('en-IN', { maximumFractionDigits: 4 })} ${state.to}
         </div>
@@ -45,13 +49,46 @@ export async function render(): Promise<HTMLElement> {
 
     const inputsEl = converterEl.querySelector('#inputs') as HTMLElement;
 
-    inputsEl.appendChild(createNumberInput({ id: 'amount', label: 'Amount', value: state.amount, onChange: (v) => { state.amount = v; update(); } }));
-    inputsEl.appendChild(createSelect({ id: 'from', label: 'From', value: state.from, options: currencyOptions, onChange: (v) => { state.from = v; update(); } }));
-    inputsEl.appendChild(createSelect({ id: 'to', label: 'To', value: state.to, options: currencyOptions, onChange: (v) => { state.to = v; update(); } }));
+    inputsEl.appendChild(
+      createNumberInput({
+        id: 'amount',
+        label: 'Amount',
+        value: state.amount,
+        onChange: (v) => {
+          state.amount = v;
+          update();
+        },
+      })
+    );
+    inputsEl.appendChild(
+      createSelect({
+        id: 'from',
+        label: 'From',
+        value: state.from,
+        options: currencyOptions,
+        onChange: (v) => {
+          state.from = v;
+          update();
+        },
+      })
+    );
+    inputsEl.appendChild(
+      createSelect({
+        id: 'to',
+        label: 'To',
+        value: state.to,
+        options: currencyOptions,
+        onChange: (v) => {
+          state.to = v;
+          update();
+        },
+      })
+    );
 
     await update();
   } catch {
-    converterEl.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Failed to load currencies</p>';
+    converterEl.innerHTML =
+      '<p style="color: var(--text-secondary); text-align: center;">Failed to load currencies</p>';
   }
 
   return container;

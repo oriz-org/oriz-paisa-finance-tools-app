@@ -5,7 +5,12 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
 interface SalaryBreakdown {
   basic: number;
@@ -21,7 +26,12 @@ interface SalaryBreakdown {
   takeHome: number;
 }
 
-function calculateTakeHome(ctc: number, basicPercent: number = 40, hraPercent: number = 50, pfPercent: number = 12): SalaryBreakdown {
+function calculateTakeHome(
+  ctc: number,
+  basicPercent: number = 40,
+  hraPercent: number = 50,
+  pfPercent: number = 12
+): SalaryBreakdown {
   // Yearly calculations
   const basic = (ctc * basicPercent) / 100;
   const hra = (basic * hraPercent) / 100;
@@ -46,10 +56,10 @@ function calculateTakeHome(ctc: number, basicPercent: number = 40, hraPercent: n
   let taxableIncome = grossSalary - 75000; // Standard deduction
   let incomeTax = 0;
   if (taxableIncome > 300000) incomeTax += Math.min(taxableIncome - 300000, 400000) * 0.05;
-  if (taxableIncome > 700000) incomeTax += Math.min(taxableIncome - 700000, 300000) * 0.10;
+  if (taxableIncome > 700000) incomeTax += Math.min(taxableIncome - 700000, 300000) * 0.1;
   if (taxableIncome > 1000000) incomeTax += Math.min(taxableIncome - 1000000, 200000) * 0.15;
-  if (taxableIncome > 1200000) incomeTax += Math.min(taxableIncome - 1200000, 300000) * 0.20;
-  if (taxableIncome > 1500000) incomeTax += (taxableIncome - 1500000) * 0.30;
+  if (taxableIncome > 1200000) incomeTax += Math.min(taxableIncome - 1200000, 300000) * 0.2;
+  if (taxableIncome > 1500000) incomeTax += (taxableIncome - 1500000) * 0.3;
   incomeTax += incomeTax * 0.04; // Health & Education Cess
 
   // Rebate u/s 87A
@@ -69,7 +79,7 @@ function calculateTakeHome(ctc: number, basicPercent: number = 40, hraPercent: n
     incomeTax,
     grossSalary,
     totalDeductions,
-    takeHome
+    takeHome,
   };
 }
 
@@ -92,11 +102,31 @@ export function render(): HTMLElement {
     results.innerHTML = '';
 
     // Monthly and yearly summary
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Monthly Take-Home', value: formatCurrency(result.takeHome / 12), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Yearly Take-Home', value: formatCurrency(result.takeHome) }));
-    stats.appendChild(createResultCard({ label: 'Monthly Deductions', value: formatCurrency(result.totalDeductions / 12) }));
-    stats.appendChild(createResultCard({ label: 'Take-Home %', value: `${((result.takeHome / state.ctc) * 100).toFixed(1)}%`, subtext: 'of CTC' }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Monthly Take-Home',
+        value: formatCurrency(result.takeHome / 12),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Yearly Take-Home', value: formatCurrency(result.takeHome) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Monthly Deductions',
+        value: formatCurrency(result.totalDeductions / 12),
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Take-Home %',
+        value: `${((result.takeHome / state.ctc) * 100).toFixed(1)}%`,
+        subtext: 'of CTC',
+      })
+    );
     results.appendChild(stats);
 
     // Detailed breakdown
@@ -128,27 +158,76 @@ export function render(): HTMLElement {
     results.appendChild(breakdown);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'doughnut',
       labels: ['Take-Home', 'PF', 'Income Tax', 'Professional Tax', 'Employer PF', 'Gratuity'],
-      datasets: [{ label: 'Amount', data: [result.takeHome, result.pf, result.incomeTax, result.professionalTax, result.employerPF, result.gratuity] }],
+      datasets: [
+        {
+          label: 'Amount',
+          data: [
+            result.takeHome,
+            result.pf,
+            result.incomeTax,
+            result.professionalTax,
+            result.employerPF,
+            result.gratuity,
+          ],
+        },
+      ],
       title: 'CTC Distribution',
     });
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`CTC: ₹${formatIndianNumber(state.ctc)}. Monthly take-home: ₹${formatIndianNumber(result.takeHome / 12)}. Tax: ₹${formatIndianNumber(result.incomeTax)}. PF: ₹${formatIndianNumber(result.pf)}. Suggest ways to optimize take-home.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `CTC: ₹${formatIndianNumber(state.ctc)}. Monthly take-home: ₹${formatIndianNumber(result.takeHome / 12)}. Tax: ₹${formatIndianNumber(result.incomeTax)}. PF: ₹${formatIndianNumber(result.pf)}. Suggest ways to optimize take-home.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Salary Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'ctc', label: 'Annual CTC', min: 300000, max: 100000000, value: state.ctc, step: 50000, prefix: '₹', currency: true, onChange: (v) => { state.ctc = v; update(); } }));
-  const b = document.createElement('div'); b.style.marginTop = 'var(--space-6)';
-  b.appendChild(createSmartInput({ id: 'basic', label: 'Basic % of CTC', min: 20, max: 60, value: state.basicPercent, step: 5, suffix: '%', onChange: (v) => { state.basicPercent = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'ctc',
+      label: 'Annual CTC',
+      min: 300000,
+      max: 100000000,
+      value: state.ctc,
+      step: 50000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.ctc = v;
+        update();
+      },
+    })
+  );
+  const b = document.createElement('div');
+  b.style.marginTop = 'var(--space-6)';
+  b.appendChild(
+    createSmartInput({
+      id: 'basic',
+      label: 'Basic % of CTC',
+      min: 20,
+      max: 60,
+      value: state.basicPercent,
+      step: 5,
+      suffix: '%',
+      onChange: (v) => {
+        state.basicPercent = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(b);
 
   // Info note
@@ -157,7 +236,8 @@ export function render(): HTMLElement {
   note.style.padding = 'var(--space-3)';
   note.style.background = 'var(--glass-bg)';
   note.style.borderRadius = 'var(--radius-md)';
-  note.innerHTML = '<p style="margin: 0; color: var(--text-secondary); font-size: var(--text-sm);">ℹ️ Tax calculated using New Regime FY 2024-25. Actual may vary based on deductions.</p>';
+  note.innerHTML =
+    '<p style="margin: 0; color: var(--text-secondary); font-size: var(--text-sm);">ℹ️ Tax calculated using New Regime FY 2024-25. Actual may vary based on deductions.</p>';
   inputs.appendChild(note);
 
   update();

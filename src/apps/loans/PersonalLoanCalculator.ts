@@ -5,19 +5,34 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
 // Calculate EMI for reducing balance method
-function calculateReducingEMI(principal: number, annualRate: number, months: number): { emi: number; totalInterest: number; totalPayment: number } {
+function calculateReducingEMI(
+  principal: number,
+  annualRate: number,
+  months: number
+): { emi: number; totalInterest: number; totalPayment: number } {
   const monthlyRate = annualRate / 12 / 100;
-  const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+  const emi =
+    (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
+    (Math.pow(1 + monthlyRate, months) - 1);
   const totalPayment = emi * months;
   const totalInterest = totalPayment - principal;
   return { emi, totalInterest, totalPayment };
 }
 
 // Calculate EMI for flat rate method
-function calculateFlatEMI(principal: number, annualRate: number, months: number): { emi: number; totalInterest: number; totalPayment: number } {
+function calculateFlatEMI(
+  principal: number,
+  annualRate: number,
+  months: number
+): { emi: number; totalInterest: number; totalPayment: number } {
   const totalInterest = (principal * annualRate * (months / 12)) / 100;
   const totalPayment = principal + totalInterest;
   const emi = totalPayment / months;
@@ -79,15 +94,28 @@ export function render(): HTMLElement {
     results.appendChild(header);
 
     // Savings card
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'You Save with Reducing', value: formatCurrency(savings), accent: true, subtext: 'vs Flat Rate' }));
-    stats.appendChild(createResultCard({ label: 'Reducing EMI', value: formatCurrency(reducing.emi) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'You Save with Reducing',
+        value: formatCurrency(savings),
+        accent: true,
+        subtext: 'vs Flat Rate',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Reducing EMI', value: formatCurrency(reducing.emi) })
+    );
     stats.appendChild(createResultCard({ label: 'Flat EMI', value: formatCurrency(flat.emi) }));
     results.appendChild(stats);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
@@ -95,7 +123,7 @@ export function render(): HTMLElement {
       labels: ['Reducing Balance', 'Flat Rate'],
       datasets: [
         { label: 'Principal', data: [state.principal, state.principal] },
-        { label: 'Interest', data: [reducing.totalInterest, flat.totalInterest] }
+        { label: 'Interest', data: [reducing.totalInterest, flat.totalInterest] },
       ],
       title: 'Interest Comparison',
     });
@@ -103,17 +131,66 @@ export function render(): HTMLElement {
     // AI Insight
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Personal loan ₹${formatIndianNumber(state.principal)} at ${state.rate}% for ${state.tenure} months. Reducing EMI: ₹${formatIndianNumber(reducing.emi)}, Flat EMI: ₹${formatIndianNumber(flat.emi)}. Savings with reducing: ₹${formatIndianNumber(savings)}. Explain which is better and why.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Personal loan ₹${formatIndianNumber(state.principal)} at ${state.rate}% for ${state.tenure} months. Reducing EMI: ₹${formatIndianNumber(reducing.emi)}, Flat EMI: ₹${formatIndianNumber(flat.emi)}. Savings with reducing: ₹${formatIndianNumber(savings)}. Explain which is better and why.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Loan Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'prin', label: 'Loan Amount', min: 10000, max: 10000000, value: state.principal, step: 10000, prefix: '₹', currency: true, onChange: (v) => { state.principal = v; update(); } }));
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate (Annual)', min: 1, max: 50, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'prin',
+      label: 'Loan Amount',
+      min: 10000,
+      max: 10000000,
+      value: state.principal,
+      step: 10000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.principal = v;
+        update();
+      },
+    })
+  );
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate (Annual)',
+      min: 1,
+      max: 50,
+      value: state.rate,
+      step: 0.5,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
-  const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
-  t.appendChild(createSmartInput({ id: 'tenure', label: 'Tenure (Months)', min: 6, max: 84, value: state.tenure, step: 6, suffix: ' months', onChange: (v) => { state.tenure = v; update(); } }));
+  const t = document.createElement('div');
+  t.style.marginTop = 'var(--space-6)';
+  t.appendChild(
+    createSmartInput({
+      id: 'tenure',
+      label: 'Tenure (Months)',
+      min: 6,
+      max: 84,
+      value: state.tenure,
+      step: 6,
+      suffix: ' months',
+      onChange: (v) => {
+        state.tenure = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(t);
   update();
   return container;

@@ -40,7 +40,9 @@ export async function render(): Promise<HTMLElement> {
               </tr>
             </thead>
             <tbody>
-              ${files.map(file => `
+              ${files
+                .map(
+                  (file) => `
                 <tr style="border-bottom: 1px solid var(--glass-border);">
                   <td style="padding: var(--space-4);">
                     <div style="display: flex; align-items: center; gap: var(--space-3);">
@@ -52,13 +54,15 @@ export async function render(): Promise<HTMLElement> {
                     <button class="btn btn--secondary btn--sm" data-delete="${file}">🗑️</button>
                   </td>
                 </tr>
-              `).join('')}
+              `
+                )
+                .join('')}
             </tbody>
           </table>
         </div>
       `;
 
-      listEl.querySelectorAll('[data-delete]').forEach(btn => {
+      listEl.querySelectorAll('[data-delete]').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
           const filename = (e.target as HTMLElement).closest('button')!.dataset.delete!;
           if (confirm(`Delete ${filename}?`)) {
@@ -68,9 +72,9 @@ export async function render(): Promise<HTMLElement> {
           }
         });
       });
-
     } catch {
-      listEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6);">Failed to load files</div>';
+      listEl.innerHTML =
+        '<div class="glass-card" style="padding: var(--space-6);">Failed to load files</div>';
     }
   }
 

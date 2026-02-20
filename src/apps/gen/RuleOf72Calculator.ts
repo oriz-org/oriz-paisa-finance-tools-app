@@ -5,9 +5,17 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateRuleOf72(rate: number, amount: number): {
+function calculateRuleOf72(
+  rate: number,
+  amount: number
+): {
   yearsToDouble: number;
   exactYears: number;
   futureValues: { years: number; value: number; multiple: string }[];
@@ -62,11 +70,28 @@ export function render(): HTMLElement {
     `;
     results.appendChild(mainResult);
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Initial Amount', value: formatCurrency(state.amount) }));
-    stats.appendChild(createResultCard({ label: 'After Doubling', value: formatCurrency(state.amount * 2), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Rule of 72 Years', value: `${result.yearsToDouble.toFixed(1)}`, subtext: '72 ÷ Rate' }));
-    stats.appendChild(createResultCard({ label: 'Exact Years', value: `${result.exactYears.toFixed(2)}` }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({ label: 'Initial Amount', value: formatCurrency(state.amount) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'After Doubling',
+        value: formatCurrency(state.amount * 2),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Rule of 72 Years',
+        value: `${result.yearsToDouble.toFixed(1)}`,
+        subtext: '72 ÷ Rate',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Exact Years', value: `${result.exactYears.toFixed(2)}` })
+    );
     results.appendChild(stats);
 
     // Doubling timeline
@@ -89,27 +114,36 @@ export function render(): HTMLElement {
             <td style="text-align: right; padding: var(--space-2);">0</td>
             <td style="text-align: right; padding: var(--space-2);">${formatCurrency(state.amount)}</td>
           </tr>
-          ${result.futureValues.map((fv) => `
+          ${result.futureValues
+            .map(
+              (fv) => `
             <tr style="border-bottom: 1px solid var(--glass-border);">
               <td style="padding: var(--space-2);">${fv.multiple}</td>
               <td style="text-align: right; padding: var(--space-2);">${fv.years.toFixed(1)}</td>
               <td style="text-align: right; padding: var(--space-2); color: var(--accent-gain);">${formatCurrency(fv.value)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     `;
     results.appendChild(timeline);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'line',
-      labels: ['0', ...result.futureValues.map(fv => fv.years.toFixed(0))],
-      datasets: [{ label: 'Value', data: [state.amount, ...result.futureValues.map(fv => fv.value)] }],
+      labels: ['0', ...result.futureValues.map((fv) => fv.years.toFixed(0))],
+      datasets: [
+        { label: 'Value', data: [state.amount, ...result.futureValues.map((fv) => fv.value)] },
+      ],
       title: 'Exponential Growth',
     });
 
@@ -129,31 +163,69 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Rule of 72: At ${state.rate}% return, ₹${formatIndianNumber(state.amount)} doubles in ${result.yearsToDouble.toFixed(1)} years. Compare with inflation and suggest best investment options for this return.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Rule of 72: At ${state.rate}% return, ₹${formatIndianNumber(state.amount)} doubles in ${result.yearsToDouble.toFixed(1)} years. Compare with inflation and suggest best investment options for this return.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Calculate</h3>';
-  inputs.appendChild(createSmartInput({ id: 'rate', label: 'Expected Annual Return', min: 1, max: 50, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Expected Annual Return',
+      min: 1,
+      max: 50,
+      value: state.rate,
+      step: 0.5,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
 
-  const a = document.createElement('div'); a.style.marginTop = 'var(--space-6)';
-  a.appendChild(createSmartInput({ id: 'amount', label: 'Initial Investment', min: 100, max: 100000000, value: state.amount, step: 10000, prefix: '₹', currency: true, onChange: (v) => { state.amount = v; update(); } }));
+  const a = document.createElement('div');
+  a.style.marginTop = 'var(--space-6)';
+  a.appendChild(
+    createSmartInput({
+      id: 'amount',
+      label: 'Initial Investment',
+      min: 100,
+      max: 100000000,
+      value: state.amount,
+      step: 10000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.amount = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(a);
 
   // Quick rates
   const quickRates = document.createElement('div');
   quickRates.style.marginTop = 'var(--space-6)';
-  quickRates.innerHTML = '<label style="display: block; margin-bottom: var(--space-2); color: var(--text-secondary);">Quick Select Rate</label>';
+  quickRates.innerHTML =
+    '<label style="display: block; margin-bottom: var(--space-2); color: var(--text-secondary);">Quick Select Rate</label>';
   const rateButtons = document.createElement('div');
   rateButtons.style.display = 'flex';
   rateButtons.style.flexWrap = 'wrap';
   rateButtons.style.gap = 'var(--space-2)';
-  [6, 8, 10, 12, 15, 20].forEach(r => {
+  [6, 8, 10, 12, 15, 20].forEach((r) => {
     const btn = document.createElement('button');
     btn.textContent = `${r}%`;
     btn.className = `btn btn--${state.rate === r ? 'primary' : 'secondary'}`;
     btn.style.padding = 'var(--space-2) var(--space-3)';
-    btn.onclick = () => { state.rate = r; update(); };
+    btn.onclick = () => {
+      state.rate = r;
+      update();
+    };
     rateButtons.appendChild(btn);
   });
   quickRates.appendChild(rateButtons);

@@ -51,7 +51,8 @@ export function renderHeader(config: HeaderConfig = {}): string {
 
         <!-- Desktop Navigation -->
         <nav class="header-nav" id="header-nav">
-          ${NAV_LINKS.map(link => `
+          ${NAV_LINKS.map(
+            (link) => `
             <a href="${link.path}"
                class="header-nav-link"
                data-path="${link.path}"
@@ -59,7 +60,8 @@ export function renderHeader(config: HeaderConfig = {}): string {
               <span class="nav-link-icon">${link.icon}</span>
               <span class="nav-link-label">${link.label}</span>
             </a>
-          `).join('')}
+          `
+          ).join('')}
         </nav>
 
         <!-- Right Actions -->
@@ -105,17 +107,21 @@ export function initHeader(onMenuToggle?: () => void): void {
   }
 
   // Add scroll effect
-  window.addEventListener('scroll', () => {
-    const header = document.getElementById('site-header');
-    if (!header) return;
+  window.addEventListener(
+    'scroll',
+    () => {
+      const header = document.getElementById('site-header');
+      if (!header) return;
 
-    const currentScroll = window.scrollY;
+      const currentScroll = window.scrollY;
 
-    // Add shadow on scroll
-    if (currentScroll > 10) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-  }, { passive: true });
+      // Add shadow on scroll
+      if (currentScroll > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    },
+    { passive: true }
+  );
 }

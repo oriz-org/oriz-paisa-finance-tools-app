@@ -4,9 +4,19 @@
  */
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateLeaveEncashment(basic: number, da: number, leaveDays: number, isRetirement: boolean): {
+function calculateLeaveEncashment(
+  basic: number,
+  da: number,
+  leaveDays: number,
+  isRetirement: boolean
+): {
   encashmentAmount: number;
   perDayRate: number;
   taxExempt: number;
@@ -38,7 +48,7 @@ function calculateLeaveEncashment(basic: number, da: number, leaveDays: number, 
     perDayRate,
     taxExempt,
     taxable,
-    formula: '(Basic + DA) ÷ 30 × Leave Days'
+    formula: '(Basic + DA) ÷ 30 × Leave Days',
   };
 }
 
@@ -56,14 +66,36 @@ export function render(): HTMLElement {
   const results = container.querySelector('#results') as HTMLElement;
 
   function update(): void {
-    const result = calculateLeaveEncashment(state.basic, state.da, state.leaveDays, state.isRetirement);
+    const result = calculateLeaveEncashment(
+      state.basic,
+      state.da,
+      state.leaveDays,
+      state.isRetirement
+    );
     results.innerHTML = '';
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Encashment Amount', value: formatCurrency(result.encashmentAmount), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Per Day Rate', value: formatCurrency(result.perDayRate) }));
-    stats.appendChild(createResultCard({ label: 'Tax Exempt', value: formatCurrency(result.taxExempt), subtext: state.isRetirement ? 'On retirement' : 'Not applicable' }));
-    stats.appendChild(createResultCard({ label: 'Taxable Amount', value: formatCurrency(result.taxable) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Encashment Amount',
+        value: formatCurrency(result.encashmentAmount),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Per Day Rate', value: formatCurrency(result.perDayRate) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Tax Exempt',
+        value: formatCurrency(result.taxExempt),
+        subtext: state.isRetirement ? 'On retirement' : 'Not applicable',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Taxable Amount', value: formatCurrency(result.taxable) })
+    );
     results.appendChild(stats);
 
     // Calculation breakdown
@@ -105,13 +137,16 @@ export function render(): HTMLElement {
     const taxInfo = document.createElement('div');
     taxInfo.className = 'glass-card mb-6';
     taxInfo.style.padding = 'var(--space-4)';
-    taxInfo.style.borderLeft = state.isRetirement ? '4px solid var(--accent-gain)' : '4px solid var(--accent-cost)';
+    taxInfo.style.borderLeft = state.isRetirement
+      ? '4px solid var(--accent-gain)'
+      : '4px solid var(--accent-cost)';
     taxInfo.innerHTML = `
       <h4 style="margin-bottom: var(--space-2);">💰 Tax Treatment</h4>
       <p style="color: var(--text-secondary); margin: 0;">
-        ${state.isRetirement
-          ? `<strong style="color: var(--accent-gain);">On Retirement:</strong> Exempt up to ₹25 lakh. Any excess is taxable as salary income.`
-          : `<strong style="color: var(--accent-cost);">During Service:</strong> Fully taxable as salary income in the year of receipt.`
+        ${
+          state.isRetirement
+            ? `<strong style="color: var(--accent-gain);">On Retirement:</strong> Exempt up to ₹25 lakh. Any excess is taxable as salary income.`
+            : `<strong style="color: var(--accent-cost);">During Service:</strong> Fully taxable as salary income in the year of receipt.`
         }
       </p>
     `;
@@ -119,8 +154,12 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Leave encashment: Basic ₹${formatIndianNumber(state.basic)}, DA ₹${formatIndianNumber(state.da)}, ${state.leaveDays} days. Total: ₹${formatIndianNumber(result.encashmentAmount)}. ${state.isRetirement ? 'On retirement' : 'During service'}. Explain tax implications and planning strategies.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Leave encashment: Basic ₹${formatIndianNumber(state.basic)}, DA ₹${formatIndianNumber(state.da)}, ${state.leaveDays} days. Total: ₹${formatIndianNumber(result.encashmentAmount)}. ${state.isRetirement ? 'On retirement' : 'During service'}. Explain tax implications and planning strategies.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Leave Details</h3>';
@@ -135,7 +174,10 @@ export function render(): HTMLElement {
   retCheck.type = 'checkbox';
   retCheck.id = 'isRetirement';
   retCheck.checked = state.isRetirement;
-  retCheck.onchange = (e) => { state.isRetirement = (e.target as HTMLInputElement).checked; update(); };
+  retCheck.onchange = (e) => {
+    state.isRetirement = (e.target as HTMLInputElement).checked;
+    update();
+  };
   const retLabel = document.createElement('label');
   retLabel.htmlFor = 'isRetirement';
   retLabel.textContent = 'Encashment on Retirement/Resignation';
@@ -144,14 +186,60 @@ export function render(): HTMLElement {
   retDiv.appendChild(retLabel);
   inputs.appendChild(retDiv);
 
-  inputs.appendChild(createSmartInput({ id: 'basic', label: 'Basic Salary (Monthly)', min: 5000, max: 1000000, value: state.basic, step: 1000, prefix: '₹', currency: true, onChange: (v) => { state.basic = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'basic',
+      label: 'Basic Salary (Monthly)',
+      min: 5000,
+      max: 1000000,
+      value: state.basic,
+      step: 1000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.basic = v;
+        update();
+      },
+    })
+  );
 
-  const da = document.createElement('div'); da.style.marginTop = 'var(--space-6)';
-  da.appendChild(createSmartInput({ id: 'da', label: 'Dearness Allowance', min: 0, max: 500000, value: state.da, step: 500, prefix: '₹', currency: true, onChange: (v) => { state.da = v; update(); } }));
+  const da = document.createElement('div');
+  da.style.marginTop = 'var(--space-6)';
+  da.appendChild(
+    createSmartInput({
+      id: 'da',
+      label: 'Dearness Allowance',
+      min: 0,
+      max: 500000,
+      value: state.da,
+      step: 500,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.da = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(da);
 
-  const l = document.createElement('div'); l.style.marginTop = 'var(--space-6)';
-  l.appendChild(createSmartInput({ id: 'leave', label: 'Leave Days to Encash', min: 1, max: 300, value: state.leaveDays, step: 1, suffix: ' days', onChange: (v) => { state.leaveDays = v; update(); } }));
+  const l = document.createElement('div');
+  l.style.marginTop = 'var(--space-6)';
+  l.appendChild(
+    createSmartInput({
+      id: 'leave',
+      label: 'Leave Days to Encash',
+      min: 1,
+      max: 300,
+      value: state.leaveDays,
+      step: 1,
+      suffix: ' days',
+      onChange: (v) => {
+        state.leaveDays = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(l);
 
   update();

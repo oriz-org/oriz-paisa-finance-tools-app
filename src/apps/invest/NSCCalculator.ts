@@ -5,10 +5,19 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
 // NSC compounds annually, interest added back to principal
-function calculateNSC(investment: number, annualRate: number, years: number = 5): {
+function calculateNSC(
+  investment: number,
+  annualRate: number,
+  years: number = 5
+): {
   maturityValue: number;
   totalInterest: number;
   yearWise: { year: number; opening: number; interest: number; closing: number }[];
@@ -26,7 +35,7 @@ function calculateNSC(investment: number, annualRate: number, years: number = 5)
   return {
     maturityValue: balance,
     totalInterest: balance - investment,
-    yearWise
+    yearWise,
   };
 }
 
@@ -48,11 +57,28 @@ export function render(): HTMLElement {
     const result = calculateNSC(state.investment, state.rate, 5);
     results.innerHTML = '';
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Maturity Value', value: formatCurrency(result.maturityValue), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Total Interest', value: formatCurrency(result.totalInterest) }));
-    stats.appendChild(createResultCard({ label: 'Investment', value: formatCurrency(state.investment) }));
-    stats.appendChild(createResultCard({ label: 'Effective Return', value: `${((result.maturityValue / state.investment - 1) * 100).toFixed(1)}%`, subtext: 'Over 5 years' }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Maturity Value',
+        value: formatCurrency(result.maturityValue),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Total Interest', value: formatCurrency(result.totalInterest) })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Investment', value: formatCurrency(state.investment) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Effective Return',
+        value: `${((result.maturityValue / state.investment - 1) * 100).toFixed(1)}%`,
+        subtext: 'Over 5 years',
+      })
+    );
     results.appendChild(stats);
 
     // Year-wise breakdown
@@ -71,28 +97,35 @@ export function render(): HTMLElement {
           </tr>
         </thead>
         <tbody>
-          ${result.yearWise.map(y => `
+          ${result.yearWise
+            .map(
+              (y) => `
             <tr style="border-bottom: 1px solid var(--glass-border);">
               <td style="padding: var(--space-2);">Year ${y.year}</td>
               <td style="text-align: right; padding: var(--space-2);">${formatCurrency(y.opening)}</td>
               <td style="text-align: right; padding: var(--space-2); color: var(--accent-gain);">+${formatCurrency(y.interest)}</td>
               <td style="text-align: right; padding: var(--space-2);">${formatCurrency(y.closing)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     `;
     results.appendChild(table);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'line',
-      labels: result.yearWise.map(y => `Year ${y.year}`),
-      datasets: [{ label: 'Value', data: result.yearWise.map(y => y.closing) }],
+      labels: result.yearWise.map((y) => `Year ${y.year}`),
+      datasets: [{ label: 'Value', data: result.yearWise.map((y) => y.closing) }],
       title: 'Growth Over 5 Years',
     });
 
@@ -112,14 +145,48 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`NSC Investment: ₹${formatIndianNumber(state.investment)} at ${state.rate}%. Maturity: ₹${formatIndianNumber(result.maturityValue)} after 5 years. Total interest: ₹${formatIndianNumber(result.totalInterest)}. Compare NSC vs PPF vs FD for tax saving.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `NSC Investment: ₹${formatIndianNumber(state.investment)} at ${state.rate}%. Maturity: ₹${formatIndianNumber(result.maturityValue)} after 5 years. Total interest: ₹${formatIndianNumber(result.totalInterest)}. Compare NSC vs PPF vs FD for tax saving.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Investment Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'invest', label: 'Investment Amount', min: 1000, max: 10000000, value: state.investment, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.investment = v; update(); } }));
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 5, max: 12, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'invest',
+      label: 'Investment Amount',
+      min: 1000,
+      max: 10000000,
+      value: state.investment,
+      step: 5000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.investment = v;
+        update();
+      },
+    })
+  );
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate',
+      min: 5,
+      max: 12,
+      value: state.rate,
+      step: 0.1,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
 
   // Current rate info
@@ -128,7 +195,8 @@ export function render(): HTMLElement {
   rateInfo.style.padding = 'var(--space-3)';
   rateInfo.style.background = 'var(--glass-bg)';
   rateInfo.style.borderRadius = 'var(--radius-md)';
-  rateInfo.innerHTML = '<p style="margin: 0; color: var(--text-secondary); font-size: var(--text-sm);">ℹ️ Current NSC rate (2024): 7.7% p.a.</p>';
+  rateInfo.innerHTML =
+    '<p style="margin: 0; color: var(--text-secondary); font-size: var(--text-sm);">ℹ️ Current NSC rate (2024): 7.7% p.a.</p>';
   inputs.appendChild(rateInfo);
 
   update();

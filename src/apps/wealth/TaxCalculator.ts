@@ -4,9 +4,21 @@
 import { createSmartInput } from '@/components/ui/SmartInput';
 import { formatCurrency } from '@/core/math';
 
-interface TaxResult { taxable: number; tax: number; cess: number; total: number; effectiveRate: number; }
+interface TaxResult {
+  taxable: number;
+  tax: number;
+  cess: number;
+  total: number;
+  effectiveRate: number;
+}
 
-function calcOldRegime(income: number, ded80C: number, ded80D: number, nps: number, hra: number): TaxResult {
+function calcOldRegime(
+  income: number,
+  ded80C: number,
+  ded80D: number,
+  nps: number,
+  hra: number
+): TaxResult {
   const std = 50000;
   const taxable = Math.max(0, income - std - ded80C - ded80D - nps - hra);
   let tax = 0;
@@ -16,14 +28,21 @@ function calcOldRegime(income: number, ded80C: number, ded80D: number, nps: numb
   else if (taxable > 500000) tax = (taxable - 500000) * 0.2;
   else if (taxable > 250000) tax = (taxable - 250000) * 0.05;
   const cess = tax * 0.04;
-  return { taxable, tax, cess, total: tax + cess, effectiveRate: (tax + cess) / income * 100 };
+  return { taxable, tax, cess, total: tax + cess, effectiveRate: ((tax + cess) / income) * 100 };
 }
 
 function calcNewRegime(income: number): TaxResult {
   const std = 75000;
   const taxable = Math.max(0, income - std);
   let tax = 0;
-  const slabs = [[300000, 0], [400000, 0.05], [700000, 0.1], [1000000, 0.15], [1200000, 0.2], [1500000, 0.25]];
+  const slabs = [
+    [300000, 0],
+    [400000, 0.05],
+    [700000, 0.1],
+    [1000000, 0.15],
+    [1200000, 0.2],
+    [1500000, 0.25],
+  ];
   let remaining = taxable;
   let prev = 0;
   for (const [limit, rate] of slabs) {
@@ -37,7 +56,7 @@ function calcNewRegime(income: number): TaxResult {
   // Rebate u/s 87A
   if (taxable <= 700000) tax = 0;
   const cess = tax * 0.04;
-  return { taxable, tax, cess, total: tax + cess, effectiveRate: (tax + cess) / income * 100 };
+  return { taxable, tax, cess, total: tax + cess, effectiveRate: ((tax + cess) / income) * 100 };
 }
 
 export function render(): HTMLElement {
@@ -81,23 +100,87 @@ export function render(): HTMLElement {
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Income & Deductions</h3>';
-  inputs.appendChild(createSmartInput({ id: 'income', label: 'Annual Income', min: 100000, max: 50000000, value: state.income, step: 50000, prefix: '₹', currency: true, onChange: (v) => { state.income = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'income',
+      label: 'Annual Income',
+      min: 100000,
+      max: 50000000,
+      value: state.income,
+      step: 50000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.income = v;
+        update();
+      },
+    })
+  );
 
   const note = document.createElement('div');
-  note.style.cssText = 'margin-top: var(--space-6); font-size: var(--text-sm); color: var(--text-tertiary);';
+  note.style.cssText =
+    'margin-top: var(--space-6); font-size: var(--text-sm); color: var(--text-tertiary);';
   note.textContent = 'Deductions only apply to Old Regime:';
   inputs.appendChild(note);
 
-  const d1 = document.createElement('div'); d1.style.marginTop = 'var(--space-4)';
-  d1.appendChild(createSmartInput({ id: '80c', label: '80C (PPF, ELSS, etc.)', min: 0, max: 150000, value: state.ded80C, step: 10000, prefix: '₹', currency: true, onChange: (v) => { state.ded80C = v; update(); } }));
+  const d1 = document.createElement('div');
+  d1.style.marginTop = 'var(--space-4)';
+  d1.appendChild(
+    createSmartInput({
+      id: '80c',
+      label: '80C (PPF, ELSS, etc.)',
+      min: 0,
+      max: 150000,
+      value: state.ded80C,
+      step: 10000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.ded80C = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(d1);
 
-  const d2 = document.createElement('div'); d2.style.marginTop = 'var(--space-4)';
-  d2.appendChild(createSmartInput({ id: '80d', label: '80D (Health Insurance)', min: 0, max: 100000, value: state.ded80D, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.ded80D = v; update(); } }));
+  const d2 = document.createElement('div');
+  d2.style.marginTop = 'var(--space-4)';
+  d2.appendChild(
+    createSmartInput({
+      id: '80d',
+      label: '80D (Health Insurance)',
+      min: 0,
+      max: 100000,
+      value: state.ded80D,
+      step: 5000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.ded80D = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(d2);
 
-  const d3 = document.createElement('div'); d3.style.marginTop = 'var(--space-4)';
-  d3.appendChild(createSmartInput({ id: 'nps', label: '80CCD(1B) NPS', min: 0, max: 50000, value: state.nps, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.nps = v; update(); } }));
+  const d3 = document.createElement('div');
+  d3.style.marginTop = 'var(--space-4)';
+  d3.appendChild(
+    createSmartInput({
+      id: 'nps',
+      label: '80CCD(1B) NPS',
+      min: 0,
+      max: 50000,
+      value: state.nps,
+      step: 5000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.nps = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(d3);
 
   update();

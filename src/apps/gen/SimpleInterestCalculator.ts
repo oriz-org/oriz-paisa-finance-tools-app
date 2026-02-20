@@ -4,9 +4,19 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateSimpleInterest(principal: number, rate: number, time: number, timeUnit: 'years' | 'months'): {
+function calculateSimpleInterest(
+  principal: number,
+  rate: number,
+  time: number,
+  timeUnit: 'years' | 'months'
+): {
   interest: number;
   totalAmount: number;
   effectiveRate: number;
@@ -37,11 +47,24 @@ export function render(): HTMLElement {
     const result = calculateSimpleInterest(state.principal, state.rate, state.time, state.timeUnit);
     results.innerHTML = '';
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Total Amount', value: formatCurrency(result.totalAmount), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Simple Interest', value: formatCurrency(result.interest) }));
-    stats.appendChild(createResultCard({ label: 'Principal', value: formatCurrency(state.principal) }));
-    stats.appendChild(createResultCard({ label: 'Total Return', value: `${result.effectiveRate.toFixed(1)}%` }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Total Amount',
+        value: formatCurrency(result.totalAmount),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Simple Interest', value: formatCurrency(result.interest) })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Principal', value: formatCurrency(state.principal) })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Total Return', value: `${result.effectiveRate.toFixed(1)}%` })
+    );
     results.appendChild(stats);
 
     // Formula display
@@ -61,8 +84,11 @@ export function render(): HTMLElement {
     results.appendChild(formula);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
@@ -87,15 +113,49 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Simple interest on ₹${formatIndianNumber(state.principal)} at ${state.rate}% for ${state.time} ${state.timeUnit}. Interest: ₹${formatIndianNumber(result.interest)}. Compare with compound interest and suggest which investments use simple interest.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Simple interest on ₹${formatIndianNumber(state.principal)} at ${state.rate}% for ${state.time} ${state.timeUnit}. Interest: ₹${formatIndianNumber(result.interest)}. Compare with compound interest and suggest which investments use simple interest.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Loan/Investment Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'principal', label: 'Principal Amount', min: 100, max: 100000000, value: state.principal, step: 1000, prefix: '₹', currency: true, onChange: (v) => { state.principal = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'principal',
+      label: 'Principal Amount',
+      min: 100,
+      max: 100000000,
+      value: state.principal,
+      step: 1000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.principal = v;
+        update();
+      },
+    })
+  );
 
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate (Annual)', min: 0.1, max: 50, value: state.rate, step: 0.5, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate (Annual)',
+      min: 0.1,
+      max: 50,
+      value: state.rate,
+      step: 0.5,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
 
   // Time unit toggle
@@ -103,7 +163,8 @@ export function render(): HTMLElement {
   timeDiv.style.marginTop = 'var(--space-6)';
   const timeLabel = document.createElement('label');
   timeLabel.textContent = 'Time Period';
-  timeLabel.style.cssText = 'display: block; margin-bottom: var(--space-2); color: var(--text-secondary);';
+  timeLabel.style.cssText =
+    'display: block; margin-bottom: var(--space-2); color: var(--text-secondary);';
   timeDiv.appendChild(timeLabel);
 
   const timeRow = document.createElement('div');
@@ -115,19 +176,27 @@ export function render(): HTMLElement {
   timeInput.value = state.time.toString();
   timeInput.min = '1';
   timeInput.max = '100';
-  timeInput.style.cssText = 'flex: 1; padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
-  timeInput.onchange = (e) => { state.time = parseFloat((e.target as HTMLInputElement).value) || 1; update(); };
+  timeInput.style.cssText =
+    'flex: 1; padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
+  timeInput.onchange = (e) => {
+    state.time = parseFloat((e.target as HTMLInputElement).value) || 1;
+    update();
+  };
 
   const unitSelect = document.createElement('select');
-  unitSelect.style.cssText = 'padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
-  ['years', 'months'].forEach(u => {
+  unitSelect.style.cssText =
+    'padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
+  ['years', 'months'].forEach((u) => {
     const opt = document.createElement('option');
     opt.value = u;
     opt.textContent = u.charAt(0).toUpperCase() + u.slice(1);
     if (u === state.timeUnit) opt.selected = true;
     unitSelect.appendChild(opt);
   });
-  unitSelect.onchange = (e) => { state.timeUnit = (e.target as HTMLSelectElement).value as 'years' | 'months'; update(); };
+  unitSelect.onchange = (e) => {
+    state.timeUnit = (e.target as HTMLSelectElement).value as 'years' | 'months';
+    update();
+  };
 
   timeRow.appendChild(timeInput);
   timeRow.appendChild(unitSelect);

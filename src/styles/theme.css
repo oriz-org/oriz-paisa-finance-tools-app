@@ -4,7 +4,9 @@
    ============================================ */
 
 /* ---------- CSS RESET ---------- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -16,7 +18,13 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
   background: var(--gradient-bg);
   color: var(--text-primary);
   min-height: 100vh;
@@ -36,8 +44,8 @@ body {
   --gradient-bg: linear-gradient(135deg, #0a0f1a 0%, #0d1b2a 50%, #1b4965 100%);
   --gradient-card: linear-gradient(145deg, rgba(27, 40, 56, 0.8), rgba(13, 27, 42, 0.6));
   --gradient-accent: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
-  --gradient-success: linear-gradient(135deg, #34C759 0%, #2ba84a 100%);
-  --gradient-danger: linear-gradient(135deg, #FF3B30 0%, #cc2f26 100%);
+  --gradient-success: linear-gradient(135deg, #34c759 0%, #2ba84a 100%);
+  --gradient-danger: linear-gradient(135deg, #ff3b30 0%, #cc2f26 100%);
 
   /* === GLASS EFFECTS === */
   --glass-bg: rgba(255, 255, 255, 0.03);
@@ -50,11 +58,11 @@ body {
   /* === ACCENT COLORS === */
   --accent-primary: #00d4ff;
   --accent-secondary: #7c3aed;
-  --accent-growth: #34C759;
-  --accent-cost: #FF3B30;
-  --accent-warning: #FF9500;
-  --accent-neutral: #0A84FF;
-  --accent-gold: #FFD700;
+  --accent-growth: #34c759;
+  --accent-cost: #ff3b30;
+  --accent-warning: #ff9500;
+  --accent-neutral: #0a84ff;
+  --accent-gold: #ffd700;
 
   /* === TEXT COLORS === */
   --text-primary: rgba(255, 255, 255, 0.95);
@@ -191,9 +199,15 @@ body {
   transform: scale(1.15);
 }
 
-.window-control--close { background: #ff5f57; }
-.window-control--minimize { background: #ffbd2e; }
-.window-control--maximize { background: #28ca41; }
+.window-control--close {
+  background: #ff5f57;
+}
+.window-control--minimize {
+  background: #ffbd2e;
+}
+.window-control--maximize {
+  background: #28ca41;
+}
 
 .window-title {
   font-size: var(--text-sm);
@@ -469,9 +483,15 @@ select option {
   gap: var(--space-4);
 }
 
-.grid--2 { grid-template-columns: repeat(2, 1fr); }
-.grid--3 { grid-template-columns: repeat(3, 1fr); }
-.grid--4 { grid-template-columns: repeat(4, 1fr); }
+.grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
 
 .grid--auto {
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -779,8 +799,12 @@ select option {
 }
 
 @keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 .spinner {
@@ -793,7 +817,9 @@ select option {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ---------- AI INSIGHT BOX ---------- */
@@ -862,10 +888,18 @@ select option {
   }
 }
 
-.toast--success { border-left: 3px solid var(--accent-growth); }
-.toast--error { border-left: 3px solid var(--accent-cost); }
-.toast--warning { border-left: 3px solid var(--accent-warning); }
-.toast--info { border-left: 3px solid var(--accent-primary); }
+.toast--success {
+  border-left: 3px solid var(--accent-growth);
+}
+.toast--error {
+  border-left: 3px solid var(--accent-cost);
+}
+.toast--warning {
+  border-left: 3px solid var(--accent-warning);
+}
+.toast--info {
+  border-left: 3px solid var(--accent-primary);
+}
 
 /* ---------- SCROLLBAR ---------- */
 ::-webkit-scrollbar {
@@ -899,28 +933,66 @@ select option {
   border: 0;
 }
 
-.text-center { text-align: center; }
-.text-right { text-align: right; }
-.text-mono { font-family: var(--font-mono); }
-.text-success { color: var(--accent-growth); }
-.text-danger { color: var(--accent-cost); }
-.text-muted { color: var(--text-tertiary); }
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.text-mono {
+  font-family: var(--font-mono);
+}
+.text-success {
+  color: var(--accent-growth);
+}
+.text-danger {
+  color: var(--accent-cost);
+}
+.text-muted {
+  color: var(--text-tertiary);
+}
 
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-2 { gap: var(--space-2); }
-.gap-4 { gap: var(--space-4); }
-.gap-6 { gap: var(--space-6); }
+.flex {
+  display: flex;
+}
+.flex-col {
+  flex-direction: column;
+}
+.items-center {
+  align-items: center;
+}
+.justify-between {
+  justify-content: space-between;
+}
+.gap-2 {
+  gap: var(--space-2);
+}
+.gap-4 {
+  gap: var(--space-4);
+}
+.gap-6 {
+  gap: var(--space-6);
+}
 
-.mt-4 { margin-top: var(--space-4); }
-.mt-6 { margin-top: var(--space-6); }
-.mb-4 { margin-bottom: var(--space-4); }
-.mb-6 { margin-bottom: var(--space-6); }
+.mt-4 {
+  margin-top: var(--space-4);
+}
+.mt-6 {
+  margin-top: var(--space-6);
+}
+.mb-4 {
+  margin-bottom: var(--space-4);
+}
+.mb-6 {
+  margin-bottom: var(--space-6);
+}
 
-.hidden { display: none; }
-.block { display: block; }
+.hidden {
+  display: none;
+}
+.block {
+  display: block;
+}
 
 /* ========================================
    SITE HEADER
@@ -937,7 +1009,9 @@ select option {
   -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--glass-border);
   z-index: var(--z-sticky);
-  transition: box-shadow var(--transition-base), background var(--transition-base);
+  transition:
+    box-shadow var(--transition-base),
+    background var(--transition-base);
 }
 
 .site-header.scrolled {
@@ -1179,8 +1253,13 @@ select option {
 }
 
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
 }
 
 /* ========================================
@@ -1481,7 +1560,7 @@ body {
 
   /* Currency values should not wrap */
   .currency,
-  [style*="font-family: var(--font-mono)"] {
+  [style*='font-family: var(--font-mono)'] {
     white-space: nowrap;
   }
 

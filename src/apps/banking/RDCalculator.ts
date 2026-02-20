@@ -20,20 +20,74 @@ export function render(): HTMLElement {
   function update(): void {
     const result = calculateRD(state.monthly, state.rate, state.tenure);
     results.innerHTML = '';
-    const stats = document.createElement('div'); stats.className = 'stats-grid';
-    stats.appendChild(createResultCard({ label: 'Maturity Amount', value: formatCurrency(result.maturityAmount), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Total Deposit', value: formatCurrency(result.totalDeposit) }));
-    stats.appendChild(createResultCard({ label: 'Interest Earned', value: formatCurrency(result.totalInterest) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid';
+    stats.appendChild(
+      createResultCard({
+        label: 'Maturity Amount',
+        value: formatCurrency(result.maturityAmount),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Total Deposit', value: formatCurrency(result.totalDeposit) })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Interest Earned', value: formatCurrency(result.totalInterest) })
+    );
     results.appendChild(stats);
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">RD Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'mon', label: 'Monthly Deposit', min: 500, max: 100000, value: state.monthly, step: 500, prefix: '₹', currency: true, onChange: (v) => { state.monthly = v; update(); } }));
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 1, max: 50, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'mon',
+      label: 'Monthly Deposit',
+      min: 500,
+      max: 100000,
+      value: state.monthly,
+      step: 500,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.monthly = v;
+        update();
+      },
+    })
+  );
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate',
+      min: 1,
+      max: 50,
+      value: state.rate,
+      step: 0.1,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
-  const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
-  t.appendChild(createSmartInput({ id: 'tenure', label: 'Tenure (Months)', min: 6, max: 120, value: state.tenure, onChange: (v) => { state.tenure = v; update(); } }));
+  const t = document.createElement('div');
+  t.style.marginTop = 'var(--space-6)';
+  t.appendChild(
+    createSmartInput({
+      id: 'tenure',
+      label: 'Tenure (Months)',
+      min: 6,
+      max: 120,
+      value: state.tenure,
+      onChange: (v) => {
+        state.tenure = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(t);
   update();
   return container;

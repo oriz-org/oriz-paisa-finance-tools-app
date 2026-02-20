@@ -38,18 +38,15 @@ function calculateP2PLending(
 
   // TDS calculation (10% if interest > ₹5000)
   const interestAfterPlatformFee = grossInterest - platformFee;
-  const tds = interestAfterPlatformFee > TDS_THRESHOLD
-    ? (interestAfterPlatformFee * TDS_RATE) / 100
-    : 0;
+  const tds =
+    interestAfterPlatformFee > TDS_THRESHOLD ? (interestAfterPlatformFee * TDS_RATE) / 100 : 0;
 
   // Net calculations
   const netInterest = interestAfterPlatformFee - tds;
   const netReturn = principal + netInterest;
 
   // Effective rate after all deductions
-  const effectiveRate = tenureYears > 0
-    ? (netInterest / principal / tenureYears) * 100
-    : 0;
+  const effectiveRate = tenureYears > 0 ? (netInterest / principal / tenureYears) * 100 : 0;
 
   // Monthly interest (for monthly payout calculation)
   const monthlyInterest = grossInterest / tenureMonths;
@@ -62,7 +59,7 @@ function calculateP2PLending(
     netInterest: Math.round(netInterest),
     netReturn: Math.round(netReturn),
     effectiveRate: Math.round(effectiveRate * 100) / 100,
-    monthlyInterest: Math.round(monthlyInterest)
+    monthlyInterest: Math.round(monthlyInterest),
   };
 }
 
@@ -72,7 +69,7 @@ export function render(): HTMLElement {
     rate: 12,
     tenure: 12,
     platformFee: PLATFORM_FEE_PERCENT,
-    payoutType: 'maturity' // or 'monthly'
+    payoutType: 'maturity', // or 'monthly'
   };
 
   const container = document.createElement('div');
@@ -105,31 +102,41 @@ export function render(): HTMLElement {
     stats.className = 'stats-grid';
 
     if (state.payoutType === 'monthly') {
-      stats.appendChild(createResultCard({
-        label: 'Monthly Interest',
-        value: formatCurrency(result.monthlyInterest),
-        accent: true
-      }));
+      stats.appendChild(
+        createResultCard({
+          label: 'Monthly Interest',
+          value: formatCurrency(result.monthlyInterest),
+          accent: true,
+        })
+      );
     } else {
-      stats.appendChild(createResultCard({
-        label: 'Net Return at Maturity',
-        value: formatCurrency(result.netReturn),
-        accent: true
-      }));
+      stats.appendChild(
+        createResultCard({
+          label: 'Net Return at Maturity',
+          value: formatCurrency(result.netReturn),
+          accent: true,
+        })
+      );
     }
 
-    stats.appendChild(createResultCard({
-      label: 'Gross Interest',
-      value: formatCurrency(result.grossInterest)
-    }));
-    stats.appendChild(createResultCard({
-      label: 'Net Interest (After Deductions)',
-      value: formatCurrency(result.netInterest)
-    }));
-    stats.appendChild(createResultCard({
-      label: 'Effective Rate',
-      value: `${result.effectiveRate}% p.a.`
-    }));
+    stats.appendChild(
+      createResultCard({
+        label: 'Gross Interest',
+        value: formatCurrency(result.grossInterest),
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Net Interest (After Deductions)',
+        value: formatCurrency(result.netInterest),
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Effective Rate',
+        value: `${result.effectiveRate}% p.a.`,
+      })
+    );
 
     results.appendChild(stats);
 
@@ -183,77 +190,102 @@ export function render(): HTMLElement {
 
   // Principal with RBI cap warning
   const principalContainer = document.createElement('div');
-  principalContainer.appendChild(createSmartInput({
-    id: 'p2p-principal',
-    label: `Principal Amount (Max ₹${(MAX_LENDING_AMOUNT / 100000).toFixed(0)}L)`,
-    min: 1000,
-    max: MAX_LENDING_AMOUNT,
-    value: state.principal,
-    step: 10000,
-    prefix: '₹',
-    currency: true,
-    onChange: (v) => { state.principal = v; update(); }
-  }));
+  principalContainer.appendChild(
+    createSmartInput({
+      id: 'p2p-principal',
+      label: `Principal Amount (Max ₹${(MAX_LENDING_AMOUNT / 100000).toFixed(0)}L)`,
+      min: 1000,
+      max: MAX_LENDING_AMOUNT,
+      value: state.principal,
+      step: 10000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.principal = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(principalContainer);
 
   // Interest rate
   const rateContainer = document.createElement('div');
   rateContainer.style.marginTop = 'var(--space-6)';
-  rateContainer.appendChild(createSmartInput({
-    id: 'p2p-rate',
-    label: 'Expected Interest Rate',
-    min: 8,
-    max: 36,
-    value: state.rate,
-    step: 0.5,
-    suffix: '%',
-    onChange: (v) => { state.rate = v; update(); }
-  }));
+  rateContainer.appendChild(
+    createSmartInput({
+      id: 'p2p-rate',
+      label: 'Expected Interest Rate',
+      min: 8,
+      max: 36,
+      value: state.rate,
+      step: 0.5,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(rateContainer);
 
   // Tenure
   const tenureContainer = document.createElement('div');
   tenureContainer.style.marginTop = 'var(--space-6)';
-  tenureContainer.appendChild(createSmartInput({
-    id: 'p2p-tenure',
-    label: 'Tenure (Months)',
-    min: 6,
-    max: 36,
-    value: state.tenure,
-    step: 1,
-    suffix: ' months',
-    onChange: (v) => { state.tenure = v; update(); }
-  }));
+  tenureContainer.appendChild(
+    createSmartInput({
+      id: 'p2p-tenure',
+      label: 'Tenure (Months)',
+      min: 6,
+      max: 36,
+      value: state.tenure,
+      step: 1,
+      suffix: ' months',
+      onChange: (v) => {
+        state.tenure = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(tenureContainer);
 
   // Platform fee
   const feeContainer = document.createElement('div');
   feeContainer.style.marginTop = 'var(--space-6)';
-  feeContainer.appendChild(createSmartInput({
-    id: 'p2p-fee',
-    label: 'Platform Fee',
-    min: 0,
-    max: 3,
-    value: state.platformFee,
-    step: 0.1,
-    suffix: '%',
-    onChange: (v) => { state.platformFee = v; update(); }
-  }));
+  feeContainer.appendChild(
+    createSmartInput({
+      id: 'p2p-fee',
+      label: 'Platform Fee',
+      min: 0,
+      max: 3,
+      value: state.platformFee,
+      step: 0.1,
+      suffix: '%',
+      onChange: (v) => {
+        state.platformFee = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(feeContainer);
 
   // Payout type
   const payoutContainer = document.createElement('div');
   payoutContainer.style.marginTop = 'var(--space-6)';
-  payoutContainer.appendChild(createSelect({
-    id: 'p2p-payout',
-    label: 'Interest Payout',
-    value: state.payoutType,
-    options: [
-      { value: 'maturity', label: 'At Maturity' },
-      { value: 'monthly', label: 'Monthly Payout' }
-    ],
-    onChange: (v) => { state.payoutType = v; update(); }
-  }));
+  payoutContainer.appendChild(
+    createSelect({
+      id: 'p2p-payout',
+      label: 'Interest Payout',
+      value: state.payoutType,
+      options: [
+        { value: 'maturity', label: 'At Maturity' },
+        { value: 'monthly', label: 'Monthly Payout' },
+      ],
+      onChange: (v) => {
+        state.payoutType = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(payoutContainer);
 
   update();

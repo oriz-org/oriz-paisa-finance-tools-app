@@ -41,40 +41,62 @@ export function render(): HTMLElement {
       ]);
 
       resultsEl.innerHTML = `
-        ${wikiResults.length > 0 ? `
+        ${
+          wikiResults.length > 0
+            ? `
           <h3 style="margin-bottom: var(--space-4);">📚 Wikipedia</h3>
           <div class="grid grid--auto gap-4 mb-6">
-            ${wikiResults.map((w) => `
+            ${wikiResults
+              .map(
+                (w) => `
               <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(w.title)}" target="_blank" class="glass-card" style="padding: var(--space-4); text-decoration: none;">
                 <div style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">${w.title}</div>
                 <p style="font-size: var(--text-sm); color: var(--text-secondary);">${w.snippet.replace(/<[^>]*>/g, '').slice(0, 150)}...</p>
               </a>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
 
-        ${devResults.length > 0 ? `
+        ${
+          devResults.length > 0
+            ? `
           <h3 style="margin-bottom: var(--space-4);">📝 Dev.to Articles</h3>
           <div class="grid grid--auto gap-4">
-            ${devResults.slice(0, 10).map((a) => `
+            ${devResults
+              .slice(0, 10)
+              .map(
+                (a) => `
               <a href="${a.url}" target="_blank" class="glass-card" style="padding: var(--space-4); text-decoration: none;">
                 <div style="font-weight: 600; color: var(--text-primary); margin-bottom: var(--space-2);">${a.title}</div>
                 <div style="font-size: var(--text-sm); color: var(--text-tertiary);">
                   ${a.user.name} • ${a.reading_time_minutes} min read
                 </div>
               </a>
-            `).join('')}
+            `
+              )
+              .join('')}
           </div>
-        ` : ''}
+        `
+            : ''
+        }
 
-        ${devResults.length === 0 && wikiResults.length === 0 ? `
+        ${
+          devResults.length === 0 && wikiResults.length === 0
+            ? `
           <div class="glass-card" style="padding: var(--space-6); text-align: center;">
             No results found for "${query}"
           </div>
-        ` : ''}
+        `
+            : ''
+        }
       `;
     } catch {
-      resultsEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Search failed</div>';
+      resultsEl.innerHTML =
+        '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Search failed</div>';
     } finally {
       searchBtn.disabled = false;
       searchBtn.textContent = 'Search';

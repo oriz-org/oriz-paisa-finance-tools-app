@@ -5,9 +5,19 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateEducationLoan(principal: number, annualRate: number, moratoriumMonths: number, repaymentMonths: number): {
+function calculateEducationLoan(
+  principal: number,
+  annualRate: number,
+  moratoriumMonths: number,
+  repaymentMonths: number
+): {
   principalAfterMoratorium: number;
   emi: number;
   totalInterest: number;
@@ -21,7 +31,9 @@ function calculateEducationLoan(principal: number, annualRate: number, moratoriu
   const principalAfterMoratorium = principal + moratoriumInterest;
 
   // EMI calculation on inflated principal
-  const emi = principalAfterMoratorium * monthlyRate * Math.pow(1 + monthlyRate, repaymentMonths) / (Math.pow(1 + monthlyRate, repaymentMonths) - 1);
+  const emi =
+    (principalAfterMoratorium * monthlyRate * Math.pow(1 + monthlyRate, repaymentMonths)) /
+    (Math.pow(1 + monthlyRate, repaymentMonths) - 1);
   const totalPayment = emi * repaymentMonths;
   const totalInterest = totalPayment - principal;
 
@@ -43,25 +55,58 @@ export function render(): HTMLElement {
   let chart: SmartChart | null = null;
 
   function update(): void {
-    const result = calculateEducationLoan(state.principal, state.rate, state.moratorium, state.repayment);
+    const result = calculateEducationLoan(
+      state.principal,
+      state.rate,
+      state.moratorium,
+      state.repayment
+    );
     results.innerHTML = '';
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Monthly EMI', value: formatCurrency(result.emi), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Moratorium Interest', value: formatCurrency(result.moratoriumInterest), subtext: `Added to principal` }));
-    stats.appendChild(createResultCard({ label: 'Effective Principal', value: formatCurrency(result.principalAfterMoratorium) }));
-    stats.appendChild(createResultCard({ label: 'Total Interest', value: formatCurrency(result.totalInterest) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({ label: 'Monthly EMI', value: formatCurrency(result.emi), accent: true })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Moratorium Interest',
+        value: formatCurrency(result.moratoriumInterest),
+        subtext: `Added to principal`,
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Effective Principal',
+        value: formatCurrency(result.principalAfterMoratorium),
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Total Interest', value: formatCurrency(result.totalInterest) })
+    );
     results.appendChild(stats);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'doughnut',
       labels: ['Original Principal', 'Moratorium Interest', 'Repayment Interest'],
-      datasets: [{ label: 'Amount', data: [state.principal, result.moratoriumInterest, result.totalInterest - result.moratoriumInterest] }],
+      datasets: [
+        {
+          label: 'Amount',
+          data: [
+            state.principal,
+            result.moratoriumInterest,
+            result.totalInterest - result.moratoriumInterest,
+          ],
+        },
+      ],
       title: 'Loan Breakdown',
     });
 
@@ -80,23 +125,87 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`Education loan: ₹${formatIndianNumber(state.principal)} at ${state.rate}%. Moratorium: ${state.moratorium} months. Repayment: ${state.repayment} months. EMI: ₹${formatIndianNumber(result.emi)}. Moratorium interest: ₹${formatIndianNumber(result.moratoriumInterest)}. Suggest whether to pay interest during moratorium.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `Education loan: ₹${formatIndianNumber(state.principal)} at ${state.rate}%. Moratorium: ${state.moratorium} months. Repayment: ${state.repayment} months. EMI: ₹${formatIndianNumber(result.emi)}. Moratorium interest: ₹${formatIndianNumber(result.moratoriumInterest)}. Suggest whether to pay interest during moratorium.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Loan Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'prin', label: 'Loan Amount', min: 100000, max: 50000000, value: state.principal, step: 50000, prefix: '₹', currency: true, onChange: (v) => { state.principal = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'prin',
+      label: 'Loan Amount',
+      min: 100000,
+      max: 50000000,
+      value: state.principal,
+      step: 50000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.principal = v;
+        update();
+      },
+    })
+  );
 
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 4, max: 20, value: state.rate, step: 0.25, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate',
+      min: 4,
+      max: 20,
+      value: state.rate,
+      step: 0.25,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
 
-  const m = document.createElement('div'); m.style.marginTop = 'var(--space-6)';
-  m.appendChild(createSmartInput({ id: 'mora', label: 'Moratorium Period', min: 0, max: 72, value: state.moratorium, step: 6, suffix: ' months', onChange: (v) => { state.moratorium = v; update(); } }));
+  const m = document.createElement('div');
+  m.style.marginTop = 'var(--space-6)';
+  m.appendChild(
+    createSmartInput({
+      id: 'mora',
+      label: 'Moratorium Period',
+      min: 0,
+      max: 72,
+      value: state.moratorium,
+      step: 6,
+      suffix: ' months',
+      onChange: (v) => {
+        state.moratorium = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(m);
 
-  const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
-  t.appendChild(createSmartInput({ id: 'repay', label: 'Repayment Period', min: 12, max: 180, value: state.repayment, step: 12, suffix: ' months', onChange: (v) => { state.repayment = v; update(); } }));
+  const t = document.createElement('div');
+  t.style.marginTop = 'var(--space-6)';
+  t.appendChild(
+    createSmartInput({
+      id: 'repay',
+      label: 'Repayment Period',
+      min: 12,
+      max: 180,
+      value: state.repayment,
+      step: 12,
+      suffix: ' months',
+      onChange: (v) => {
+        state.repayment = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(t);
 
   update();

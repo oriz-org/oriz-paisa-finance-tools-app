@@ -19,7 +19,8 @@ export async function render(): Promise<HTMLElement> {
     const articles = await getDevArticles(1, 30);
     articlesEl.innerHTML = renderArticles(articles);
   } catch {
-    articlesEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load articles</div>';
+    articlesEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center;">Failed to load articles</div>';
   }
 
   return container;
@@ -28,7 +29,9 @@ export async function render(): Promise<HTMLElement> {
 function renderArticles(articles: DevArticle[]): string {
   return `
     <div class="grid grid--auto gap-4">
-      ${articles.map((a) => `
+      ${articles
+        .map(
+          (a) => `
         <a href="${a.url}" target="_blank" class="glass-card" style="padding: 0; text-decoration: none; overflow: hidden;">
           ${a.cover_image ? `<img src="${a.cover_image}" alt="${a.title}" style="width: 100%; height: 150px; object-fit: cover;">` : ''}
           <div style="padding: var(--space-5);">
@@ -43,11 +46,19 @@ function renderArticles(articles: DevArticle[]): string {
               <span>📖 ${a.reading_time_minutes} min read</span>
             </div>
             <div style="display: flex; gap: var(--space-2); margin-top: var(--space-3); flex-wrap: wrap;">
-              ${a.tag_list.slice(0, 3).map((t) => `<span style="padding: 2px 8px; background: var(--glass-bg); border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--accent-primary);">#${t}</span>`).join('')}
+              ${a.tag_list
+                .slice(0, 3)
+                .map(
+                  (t) =>
+                    `<span style="padding: 2px 8px; background: var(--glass-bg); border-radius: var(--radius-full); font-size: var(--text-xs); color: var(--accent-primary);">#${t}</span>`
+                )
+                .join('')}
             </div>
           </div>
         </a>
-      `).join('')}
+      `
+        )
+        .join('')}
     </div>
   `;
 }

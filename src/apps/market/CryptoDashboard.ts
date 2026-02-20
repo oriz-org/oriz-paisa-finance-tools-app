@@ -3,7 +3,6 @@
  */
 import { getTopCryptos, type CryptoPrice } from '@/services/market';
 
-
 export async function render(): Promise<HTMLElement> {
   const container = document.createElement('div');
   container.innerHTML = `
@@ -20,7 +19,8 @@ export async function render(): Promise<HTMLElement> {
     const cryptos = await getTopCryptos(50, 'inr');
     listEl.innerHTML = renderCryptoList(cryptos);
   } catch {
-    listEl.innerHTML = '<div class="glass-card" style="padding: var(--space-6); text-align: center; color: var(--text-secondary);">Failed to load crypto data</div>';
+    listEl.innerHTML =
+      '<div class="glass-card" style="padding: var(--space-6); text-align: center; color: var(--text-secondary);">Failed to load crypto data</div>';
   }
 
   return container;
@@ -41,7 +41,9 @@ function renderCryptoList(cryptos: CryptoPrice[]): string {
           </tr>
         </thead>
         <tbody>
-          ${cryptos.map((c) => `
+          ${cryptos
+            .map(
+              (c) => `
             <tr style="border-bottom: 1px solid var(--glass-border);">
               <td style="padding: var(--space-3);">${c.market_cap_rank}</td>
               <td style="padding: var(--space-3);">
@@ -58,7 +60,9 @@ function renderCryptoList(cryptos: CryptoPrice[]): string {
               <td style="padding: var(--space-3); text-align: right; font-family: var(--font-mono);">₹${formatLargeNumber(c.market_cap)}</td>
               <td style="padding: var(--space-3); text-align: right; font-family: var(--font-mono);">₹${formatLargeNumber(c.total_volume)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     </div>

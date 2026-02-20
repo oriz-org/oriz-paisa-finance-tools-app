@@ -4,7 +4,12 @@
  */
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
 interface TDSRate {
   type: string;
@@ -25,7 +30,11 @@ const TDS_RATES: TDSRate[] = [
   { type: 'Dividends', section: '194', rate: 10, threshold: 5000 },
 ];
 
-function calculateTDS(amount: number, typeIndex: number, hasPAN: boolean): {
+function calculateTDS(
+  amount: number,
+  typeIndex: number,
+  hasPAN: boolean
+): {
   tdsAmount: number;
   effectiveRate: number;
   netAmount: number;
@@ -49,7 +58,7 @@ function calculateTDS(amount: number, typeIndex: number, hasPAN: boolean): {
     tdsAmount,
     effectiveRate,
     netAmount: amount - tdsAmount,
-    applicable: true
+    applicable: true,
   };
 }
 
@@ -75,27 +84,48 @@ export function render(): HTMLElement {
     const status = document.createElement('div');
     status.className = 'glass-card mb-6';
     status.style.padding = 'var(--space-6)';
-    status.style.borderLeft = result.applicable ? '4px solid var(--accent-cost)' : '4px solid var(--accent-gain)';
+    status.style.borderLeft = result.applicable
+      ? '4px solid var(--accent-cost)'
+      : '4px solid var(--accent-gain)';
     status.innerHTML = `
       <div style="display: flex; align-items: center; gap: var(--space-4);">
         <span style="font-size: 2rem;">${result.applicable ? '📋' : '✅'}</span>
         <div>
           <h3 style="margin: 0;">${result.applicable ? 'TDS Applicable' : 'No TDS'}</h3>
           <p style="margin: 0; color: var(--text-secondary);">
-            ${result.applicable
-              ? `Section ${rate.section} - ${rate.type}`
-              : `Amount below threshold of ${formatCurrency(rate.threshold)}`}
+            ${
+              result.applicable
+                ? `Section ${rate.section} - ${rate.type}`
+                : `Amount below threshold of ${formatCurrency(rate.threshold)}`
+            }
           </p>
         </div>
       </div>
     `;
     results.appendChild(status);
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'TDS Amount', value: formatCurrency(result.tdsAmount), accent: true }));
-    stats.appendChild(createResultCard({ label: 'Net Amount', value: formatCurrency(result.netAmount) }));
-    stats.appendChild(createResultCard({ label: 'TDS Rate', value: `${result.effectiveRate}%`, subtext: state.hasPAN ? 'With PAN' : 'Without PAN (2x)' }));
-    stats.appendChild(createResultCard({ label: 'Threshold', value: formatCurrency(rate.threshold) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'TDS Amount',
+        value: formatCurrency(result.tdsAmount),
+        accent: true,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Net Amount', value: formatCurrency(result.netAmount) })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'TDS Rate',
+        value: `${result.effectiveRate}%`,
+        subtext: state.hasPAN ? 'With PAN' : 'Without PAN (2x)',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Threshold', value: formatCurrency(rate.threshold) })
+    );
     results.appendChild(stats);
 
     // TDS rates table
@@ -114,14 +144,18 @@ export function render(): HTMLElement {
           </tr>
         </thead>
         <tbody>
-          ${TDS_RATES.slice(1).map((r, i) => `
+          ${TDS_RATES.slice(1)
+            .map(
+              (r, i) => `
             <tr style="border-bottom: 1px solid var(--glass-border); ${i + 1 === state.typeIndex ? 'background: var(--accent-primary-alpha);' : ''}">
               <td style="padding: var(--space-2);">${r.type}</td>
               <td style="text-align: center; padding: var(--space-2);">${r.section}</td>
               <td style="text-align: right; padding: var(--space-2);">${r.rate}%</td>
               <td style="text-align: right; padding: var(--space-2);">${formatCurrency(r.threshold)}</td>
             </tr>
-          `).join('')}
+          `
+            )
+            .join('')}
         </tbody>
       </table>
     `;
@@ -129,8 +163,12 @@ export function render(): HTMLElement {
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`TDS on ₹${formatIndianNumber(state.amount)} for ${rate.type}. Section ${rate.section}. TDS: ₹${formatIndianNumber(result.tdsAmount)} (${result.effectiveRate}%). ${state.hasPAN ? 'With PAN' : 'Without PAN'}. Explain how to claim TDS refund if applicable.`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `TDS on ₹${formatIndianNumber(state.amount)} for ${rate.type}. Section ${rate.section}. TDS: ₹${formatIndianNumber(result.tdsAmount)} (${result.effectiveRate}%). ${state.hasPAN ? 'With PAN' : 'Without PAN'}. Explain how to claim TDS refund if applicable.`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Payment Details</h3>';
@@ -140,9 +178,11 @@ export function render(): HTMLElement {
   typeDiv.style.marginBottom = 'var(--space-6)';
   const typeLabel = document.createElement('label');
   typeLabel.textContent = 'TDS Type';
-  typeLabel.style.cssText = 'display: block; margin-bottom: var(--space-2); color: var(--text-secondary);';
+  typeLabel.style.cssText =
+    'display: block; margin-bottom: var(--space-2); color: var(--text-secondary);';
   const typeSelect = document.createElement('select');
-  typeSelect.style.cssText = 'width: 100%; padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
+  typeSelect.style.cssText =
+    'width: 100%; padding: var(--space-3); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-md); color: var(--text-primary);';
   TDS_RATES.slice(1).forEach((r, i) => {
     const opt = document.createElement('option');
     opt.value = (i + 1).toString();
@@ -150,12 +190,30 @@ export function render(): HTMLElement {
     typeSelect.appendChild(opt);
   });
   typeSelect.value = state.typeIndex.toString();
-  typeSelect.onchange = (e) => { state.typeIndex = parseInt((e.target as HTMLSelectElement).value); update(); };
+  typeSelect.onchange = (e) => {
+    state.typeIndex = parseInt((e.target as HTMLSelectElement).value);
+    update();
+  };
   typeDiv.appendChild(typeLabel);
   typeDiv.appendChild(typeSelect);
   inputs.appendChild(typeDiv);
 
-  inputs.appendChild(createSmartInput({ id: 'amount', label: 'Payment Amount', min: 1000, max: 100000000, value: state.amount, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.amount = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'amount',
+      label: 'Payment Amount',
+      min: 1000,
+      max: 100000000,
+      value: state.amount,
+      step: 5000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.amount = v;
+        update();
+      },
+    })
+  );
 
   // PAN checkbox
   const panDiv = document.createElement('div');
@@ -167,7 +225,10 @@ export function render(): HTMLElement {
   panCheck.type = 'checkbox';
   panCheck.id = 'hasPAN';
   panCheck.checked = state.hasPAN;
-  panCheck.onchange = (e) => { state.hasPAN = (e.target as HTMLInputElement).checked; update(); };
+  panCheck.onchange = (e) => {
+    state.hasPAN = (e.target as HTMLInputElement).checked;
+    update();
+  };
   const panLabel = document.createElement('label');
   panLabel.htmlFor = 'hasPAN';
   panLabel.textContent = 'PAN provided to deductor';

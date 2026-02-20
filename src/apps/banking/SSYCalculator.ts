@@ -22,30 +22,89 @@ export function render(): HTMLElement {
   function update(): void {
     const result = calculateSSY(state.yearly, state.rate, 15, 21);
     results.innerHTML = '';
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Maturity Amount', value: formatCurrency(result.maturityAmount), accent: true, subtext: 'After 21 years' }));
-    stats.appendChild(createResultCard({ label: 'Total Deposit', value: formatCurrency(result.totalDeposit), subtext: '15 years of deposits' }));
-    stats.appendChild(createResultCard({ label: 'Interest Earned', value: formatCurrency(result.totalInterest) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Maturity Amount',
+        value: formatCurrency(result.maturityAmount),
+        accent: true,
+        subtext: 'After 21 years',
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Total Deposit',
+        value: formatCurrency(result.totalDeposit),
+        subtext: '15 years of deposits',
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'Interest Earned', value: formatCurrency(result.totalInterest) })
+    );
     results.appendChild(stats);
 
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'area',
       labels: result.yearlyBreakdown.map((y) => `Y${y.year}`),
       datasets: [
-        { label: 'Balance', data: result.yearlyBreakdown.map((y) => y.balance), type: 'growth', fill: true },
-        { label: 'Deposits', data: result.yearlyBreakdown.map((y) => y.deposit), type: 'neutral', fill: false },
+        {
+          label: 'Balance',
+          data: result.yearlyBreakdown.map((y) => y.balance),
+          type: 'growth',
+          fill: true,
+        },
+        {
+          label: 'Deposits',
+          data: result.yearlyBreakdown.map((y) => y.deposit),
+          type: 'neutral',
+          fill: false,
+        },
       ],
     });
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">SSY Details</h3>';
-  inputs.appendChild(createSmartInput({ id: 'yearly', label: 'Yearly Investment', min: 250, max: 150000, value: state.yearly, step: 5000, prefix: '₹', currency: true, onChange: (v) => { state.yearly = v; update(); } }));
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate (Current: 8.2%)', min: 1, max: 50, value: state.rate, step: 0.1, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'yearly',
+      label: 'Yearly Investment',
+      min: 250,
+      max: 150000,
+      value: state.yearly,
+      step: 5000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.yearly = v;
+        update();
+      },
+    })
+  );
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate (Current: 8.2%)',
+      min: 1,
+      max: 50,
+      value: state.rate,
+      step: 0.1,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
 
   const info = document.createElement('div');

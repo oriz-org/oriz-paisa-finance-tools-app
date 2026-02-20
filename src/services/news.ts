@@ -154,10 +154,7 @@ export async function getDevArticlesByTag(
 /**
  * Search Dev.to articles
  */
-export async function searchDevArticles(
-  query: string,
-  page: number = 1
-): Promise<DevArticle[]> {
+export async function searchDevArticles(query: string, page: number = 1): Promise<DevArticle[]> {
   try {
     // Dev.to doesn't have a direct search API, so we filter locally
     const articles = await getDevArticles(page, 100);
@@ -211,7 +208,10 @@ export async function getWikiSummary(topic: string): Promise<WikiSummary | null>
 /**
  * Search Wikipedia
  */
-export async function searchWiki(query: string, limit: number = 10): Promise<Array<{ title: string; snippet: string }>> {
+export async function searchWiki(
+  query: string,
+  limit: number = 10
+): Promise<Array<{ title: string; snippet: string }>> {
   try {
     const response = await axios.get('https://en.wikipedia.org/w/api.php', {
       params: {
@@ -253,14 +253,16 @@ export async function getCryptoNews(): Promise<CryptoNewsItem[]> {
     const coins = response.data.coins || [];
 
     // Transform trending coins into news-like format
-    return coins.map((item: { item: { id: string; name: string; symbol: string; market_cap_rank: number } }) => ({
-      id: item.item.id,
-      title: `${item.item.name} (${item.item.symbol.toUpperCase()}) is trending`,
-      description: `Ranked #${item.item.market_cap_rank} by market cap. Currently trending on CoinGecko.`,
-      url: `https://www.coingecko.com/en/coins/${item.item.id}`,
-      source: 'CoinGecko Trending',
-      timestamp: new Date().toISOString(),
-    }));
+    return coins.map(
+      (item: { item: { id: string; name: string; symbol: string; market_cap_rank: number } }) => ({
+        id: item.item.id,
+        title: `${item.item.name} (${item.item.symbol.toUpperCase()}) is trending`,
+        description: `Ranked #${item.item.market_cap_rank} by market cap. Currently trending on CoinGecko.`,
+        url: `https://www.coingecko.com/en/coins/${item.item.id}`,
+        source: 'CoinGecko Trending',
+        timestamp: new Date().toISOString(),
+      })
+    );
   } catch (error) {
     console.error('Crypto News Error:', error);
     return [];
@@ -287,14 +289,11 @@ export async function getAINews(page: number = 1): Promise<DevArticle[]> {
     }
 
     // Remove duplicates and sort by date
-    const uniqueArticles = Array.from(
-      new Map(allArticles.map((a) => [a.id, a])).values()
-    );
+    const uniqueArticles = Array.from(new Map(allArticles.map((a) => [a.id, a])).values());
 
     return uniqueArticles.sort(
       (a, b) =>
-        new Date(b.published_timestamp).getTime() -
-        new Date(a.published_timestamp).getTime()
+        new Date(b.published_timestamp).getTime() - new Date(a.published_timestamp).getTime()
     );
   } catch (error) {
     console.error('AI News Error:', error);

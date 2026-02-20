@@ -5,7 +5,14 @@ import { generatePassword, calculatePasswordStrength } from '@/services/utility'
 import { createSmartInput, createToggle } from '@/components/ui/SmartInput';
 
 export function render(): HTMLElement {
-  const state = { length: 16, uppercase: true, lowercase: true, numbers: true, symbols: true, password: '' };
+  const state = {
+    length: 16,
+    uppercase: true,
+    lowercase: true,
+    numbers: true,
+    symbols: true,
+    password: '',
+  };
   state.password = generatePassword(state);
 
   const container = document.createElement('div');
@@ -66,21 +73,66 @@ export function render(): HTMLElement {
 
   optionsEl.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Options</h3>';
 
-  optionsEl.appendChild(createSmartInput({
-    id: 'length',
-    label: 'Password Length',
-    min: 8,
-    max: 64,
-    value: state.length,
-    onChange: (v) => { state.length = v; update(); },
-  }));
+  optionsEl.appendChild(
+    createSmartInput({
+      id: 'length',
+      label: 'Password Length',
+      min: 8,
+      max: 64,
+      value: state.length,
+      onChange: (v) => {
+        state.length = v;
+        update();
+      },
+    })
+  );
 
   const toggles = document.createElement('div');
   toggles.style.marginTop = 'var(--space-6)';
-  toggles.appendChild(createToggle({ id: 'upper', label: 'Uppercase (A-Z)', checked: state.uppercase, onChange: (v) => { state.uppercase = v; update(); } }));
-  toggles.appendChild(createToggle({ id: 'lower', label: 'Lowercase (a-z)', checked: state.lowercase, onChange: (v) => { state.lowercase = v; update(); } }));
-  toggles.appendChild(createToggle({ id: 'nums', label: 'Numbers (0-9)', checked: state.numbers, onChange: (v) => { state.numbers = v; update(); } }));
-  toggles.appendChild(createToggle({ id: 'syms', label: 'Symbols (!@#$)', checked: state.symbols, onChange: (v) => { state.symbols = v; update(); } }));
+  toggles.appendChild(
+    createToggle({
+      id: 'upper',
+      label: 'Uppercase (A-Z)',
+      checked: state.uppercase,
+      onChange: (v) => {
+        state.uppercase = v;
+        update();
+      },
+    })
+  );
+  toggles.appendChild(
+    createToggle({
+      id: 'lower',
+      label: 'Lowercase (a-z)',
+      checked: state.lowercase,
+      onChange: (v) => {
+        state.lowercase = v;
+        update();
+      },
+    })
+  );
+  toggles.appendChild(
+    createToggle({
+      id: 'nums',
+      label: 'Numbers (0-9)',
+      checked: state.numbers,
+      onChange: (v) => {
+        state.numbers = v;
+        update();
+      },
+    })
+  );
+  toggles.appendChild(
+    createToggle({
+      id: 'syms',
+      label: 'Symbols (!@#$)',
+      checked: state.symbols,
+      onChange: (v) => {
+        state.symbols = v;
+        update();
+      },
+    })
+  );
   optionsEl.appendChild(toggles);
 
   update();

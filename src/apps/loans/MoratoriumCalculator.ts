@@ -5,9 +5,19 @@
 import { formatCurrency, formatIndianNumber } from '@/core/math';
 import { askAI } from '@/core/puter';
 import { SmartChart } from '@/components/charts/SmartChart';
-import { createSmartInput, createResultCard, createAIInsight, updateAIInsight } from '@/components/ui/SmartInput';
+import {
+  createSmartInput,
+  createResultCard,
+  createAIInsight,
+  updateAIInsight,
+} from '@/components/ui/SmartInput';
 
-function calculateMoratoriumCost(emi: number, annualRate: number, moratoriumMonths: number, remainingMonths: number): {
+function calculateMoratoriumCost(
+  emi: number,
+  annualRate: number,
+  moratoriumMonths: number,
+  remainingMonths: number
+): {
   normalTotalPayment: number;
   moratoriumTotalPayment: number;
   additionalCost: number;
@@ -20,7 +30,9 @@ function calculateMoratoriumCost(emi: number, annualRate: number, moratoriumMont
   const normalTotalPayment = emi * remainingMonths;
 
   // Calculate outstanding principal from EMI
-  const outstandingPrincipal = emi * (Math.pow(1 + monthlyRate, remainingMonths) - 1) / (monthlyRate * Math.pow(1 + monthlyRate, remainingMonths));
+  const outstandingPrincipal =
+    (emi * (Math.pow(1 + monthlyRate, remainingMonths) - 1)) /
+    (monthlyRate * Math.pow(1 + monthlyRate, remainingMonths));
 
   // Interest accrued during moratorium (compounded)
   let accruedBalance = outstandingPrincipal;
@@ -30,7 +42,9 @@ function calculateMoratoriumCost(emi: number, annualRate: number, moratoriumMont
   const interestAccrued = accruedBalance - outstandingPrincipal;
 
   // New EMI for remaining tenure
-  const newEMI = accruedBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths) / (Math.pow(1 + monthlyRate, remainingMonths) - 1);
+  const newEMI =
+    (accruedBalance * monthlyRate * Math.pow(1 + monthlyRate, remainingMonths)) /
+    (Math.pow(1 + monthlyRate, remainingMonths) - 1);
   const moratoriumTotalPayment = newEMI * remainingMonths;
 
   return {
@@ -38,7 +52,7 @@ function calculateMoratoriumCost(emi: number, annualRate: number, moratoriumMont
     moratoriumTotalPayment,
     additionalCost: moratoriumTotalPayment - normalTotalPayment,
     newEMI,
-    interestAccrued
+    interestAccrued,
   };
 }
 
@@ -57,7 +71,12 @@ export function render(): HTMLElement {
   let chart: SmartChart | null = null;
 
   function update(): void {
-    const result = calculateMoratoriumCost(state.emi, state.rate, state.moratorium, state.remaining);
+    const result = calculateMoratoriumCost(
+      state.emi,
+      state.rate,
+      state.moratorium,
+      state.remaining
+    );
     results.innerHTML = '';
 
     // Warning banner
@@ -77,11 +96,33 @@ export function render(): HTMLElement {
     `;
     results.appendChild(warning);
 
-    const stats = document.createElement('div'); stats.className = 'stats-grid mb-6';
-    stats.appendChild(createResultCard({ label: 'Additional Cost', value: formatCurrency(result.additionalCost), accent: true, subtext: 'Due to moratorium' }));
-    stats.appendChild(createResultCard({ label: 'Interest Accrued', value: formatCurrency(result.interestAccrued), subtext: `During ${state.moratorium} months` }));
-    stats.appendChild(createResultCard({ label: 'New EMI', value: formatCurrency(result.newEMI), subtext: `Was ${formatCurrency(state.emi)}` }));
-    stats.appendChild(createResultCard({ label: 'EMI Increase', value: formatCurrency(result.newEMI - state.emi) }));
+    const stats = document.createElement('div');
+    stats.className = 'stats-grid mb-6';
+    stats.appendChild(
+      createResultCard({
+        label: 'Additional Cost',
+        value: formatCurrency(result.additionalCost),
+        accent: true,
+        subtext: 'Due to moratorium',
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'Interest Accrued',
+        value: formatCurrency(result.interestAccrued),
+        subtext: `During ${state.moratorium} months`,
+      })
+    );
+    stats.appendChild(
+      createResultCard({
+        label: 'New EMI',
+        value: formatCurrency(result.newEMI),
+        subtext: `Was ${formatCurrency(state.emi)}`,
+      })
+    );
+    stats.appendChild(
+      createResultCard({ label: 'EMI Increase', value: formatCurrency(result.newEMI - state.emi) })
+    );
     results.appendChild(stats);
 
     // Comparison
@@ -108,33 +149,105 @@ export function render(): HTMLElement {
     results.appendChild(comparison);
 
     // Chart
-    const chartBox = document.createElement('div'); chartBox.className = 'chart-container mb-6';
-    const canvas = document.createElement('canvas'); chartBox.appendChild(canvas); results.appendChild(chartBox);
+    const chartBox = document.createElement('div');
+    chartBox.className = 'chart-container mb-6';
+    const canvas = document.createElement('canvas');
+    chartBox.appendChild(canvas);
+    results.appendChild(chartBox);
     if (chart) chart.destroy();
     chart = new SmartChart(canvas);
     chart.render({
       type: 'bar',
       labels: ['Normal', 'With Moratorium'],
-      datasets: [{ label: 'Total Payment', data: [result.normalTotalPayment, result.moratoriumTotalPayment] }],
+      datasets: [
+        {
+          label: 'Total Payment',
+          data: [result.normalTotalPayment, result.moratoriumTotalPayment],
+        },
+      ],
       title: 'Total Payment Comparison',
     });
 
     const aiBox = createAIInsight('', true);
     results.appendChild(aiBox);
-    askAI(`EMI ₹${formatIndianNumber(state.emi)} at ${state.rate}%. Taking ${state.moratorium} month moratorium costs extra ₹${formatIndianNumber(result.additionalCost)}. New EMI: ₹${formatIndianNumber(result.newEMI)}. Should I opt for moratorium or continue paying?`, 'advisor')
-      .then((i) => updateAIInsight(aiBox, i)).catch(() => updateAIInsight(aiBox, 'AI unavailable'));
+    askAI(
+      `EMI ₹${formatIndianNumber(state.emi)} at ${state.rate}%. Taking ${state.moratorium} month moratorium costs extra ₹${formatIndianNumber(result.additionalCost)}. New EMI: ₹${formatIndianNumber(result.newEMI)}. Should I opt for moratorium or continue paying?`,
+      'advisor'
+    )
+      .then((i) => updateAIInsight(aiBox, i))
+      .catch(() => updateAIInsight(aiBox, 'AI unavailable'));
   }
 
   inputs.innerHTML = '<h3 style="margin-bottom: var(--space-4);">Current Loan</h3>';
-  inputs.appendChild(createSmartInput({ id: 'emi', label: 'Current EMI', min: 1000, max: 1000000, value: state.emi, step: 1000, prefix: '₹', currency: true, onChange: (v) => { state.emi = v; update(); } }));
-  const r = document.createElement('div'); r.style.marginTop = 'var(--space-6)';
-  r.appendChild(createSmartInput({ id: 'rate', label: 'Interest Rate', min: 1, max: 30, value: state.rate, step: 0.25, suffix: '%', onChange: (v) => { state.rate = v; update(); } }));
+  inputs.appendChild(
+    createSmartInput({
+      id: 'emi',
+      label: 'Current EMI',
+      min: 1000,
+      max: 1000000,
+      value: state.emi,
+      step: 1000,
+      prefix: '₹',
+      currency: true,
+      onChange: (v) => {
+        state.emi = v;
+        update();
+      },
+    })
+  );
+  const r = document.createElement('div');
+  r.style.marginTop = 'var(--space-6)';
+  r.appendChild(
+    createSmartInput({
+      id: 'rate',
+      label: 'Interest Rate',
+      min: 1,
+      max: 30,
+      value: state.rate,
+      step: 0.25,
+      suffix: '%',
+      onChange: (v) => {
+        state.rate = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(r);
-  const m = document.createElement('div'); m.style.marginTop = 'var(--space-6)';
-  m.appendChild(createSmartInput({ id: 'mora', label: 'Moratorium Period', min: 1, max: 24, value: state.moratorium, step: 1, suffix: ' months', onChange: (v) => { state.moratorium = v; update(); } }));
+  const m = document.createElement('div');
+  m.style.marginTop = 'var(--space-6)';
+  m.appendChild(
+    createSmartInput({
+      id: 'mora',
+      label: 'Moratorium Period',
+      min: 1,
+      max: 24,
+      value: state.moratorium,
+      step: 1,
+      suffix: ' months',
+      onChange: (v) => {
+        state.moratorium = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(m);
-  const t = document.createElement('div'); t.style.marginTop = 'var(--space-6)';
-  t.appendChild(createSmartInput({ id: 'remaining', label: 'Remaining Tenure', min: 12, max: 360, value: state.remaining, step: 12, suffix: ' months', onChange: (v) => { state.remaining = v; update(); } }));
+  const t = document.createElement('div');
+  t.style.marginTop = 'var(--space-6)';
+  t.appendChild(
+    createSmartInput({
+      id: 'remaining',
+      label: 'Remaining Tenure',
+      min: 12,
+      max: 360,
+      value: state.remaining,
+      step: 12,
+      suffix: ' months',
+      onChange: (v) => {
+        state.remaining = v;
+        update();
+      },
+    })
+  );
   inputs.appendChild(t);
   update();
   return container;

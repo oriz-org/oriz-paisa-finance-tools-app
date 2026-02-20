@@ -211,13 +211,19 @@ export class SmartChart {
           type === 'line' || type === 'area'
             ? createGradient(this.ctx, color, colorLight)
             : type === 'pie' || type === 'doughnut'
-            ? datasets.map((_, i) => {
-                const colors = [COLORS.growth, COLORS.neutral, COLORS.primary, COLORS.secondary, COLORS.cost];
-                return colors[i % colors.length];
-              })
-            : color,
+              ? datasets.map((_, i) => {
+                  const colors = [
+                    COLORS.growth,
+                    COLORS.neutral,
+                    COLORS.primary,
+                    COLORS.secondary,
+                    COLORS.cost,
+                  ];
+                  return colors[i % colors.length];
+                })
+              : color,
         borderWidth: 2,
-        fill: ds.fill ?? (type === 'area'),
+        fill: ds.fill ?? type === 'area',
         tension: 0.4,
         pointRadius: type === 'line' || type === 'area' ? 0 : undefined,
         pointHoverRadius: type === 'line' || type === 'area' ? 6 : undefined,
@@ -273,10 +279,7 @@ export class SmartChart {
               : undefined,
           },
         },
-        scales:
-          type === 'pie' || type === 'doughnut'
-            ? undefined
-            : defaultOptions.scales,
+        scales: type === 'pie' || type === 'doughnut' ? undefined : defaultOptions.scales,
       } as ChartOptions,
     };
 
