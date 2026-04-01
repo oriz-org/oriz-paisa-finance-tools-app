@@ -108,9 +108,10 @@
 
 ### Cloudflare & Domain Management
 
-*Note: Spaceship domains are generally already added to Cloudflare.*
+_Note: Spaceship domains are generally already added to Cloudflare._
 
 When Cloudflare API keys are present in `.env`:
+
 - Manage the complete workflow: DNS, Pages, email routing, caching, and security entirely through Cloudflare.
 - Set up email routing to `whyiswhen@gmail.com`.
 - Create `hi@<domain>` and `support@<domain>` email forwarding for all domains and subdomains automatically.
@@ -130,14 +131,15 @@ When Cloudflare API keys are present in `.env`:
 
 Write comprehensive tests at ALL levels using the project's chosen testing frameworks:
 
-| Level          | Scope                    | Focus                           |
-|----------------|--------------------------|---------------------------------|
-| Unit           | Individual functions     | Isolated logic, edge cases      |
-| Integration    | Module interactions      | Data flow, boundary integration |
-| Functional     | Feature behavior         | End-to-end user requirements    |
-| E2E            | Full user flows          | Automated client interaction    |
+| Level       | Scope                | Focus                           |
+| ----------- | -------------------- | ------------------------------- |
+| Unit        | Individual functions | Isolated logic, edge cases      |
+| Integration | Module interactions  | Data flow, boundary integration |
+| Functional  | Feature behavior     | End-to-end user requirements    |
+| E2E         | Full user flows      | Automated client interaction    |
 
 **Rules**:
+
 - Tests must run in both local dev and GitHub Actions.
 - CI must use `continue-on-error: true` per test step
   so ALL tests execute even if some fail.
@@ -169,15 +171,15 @@ Write comprehensive tests at ALL levels using the project's chosen testing frame
 
 Maximize use of ALL available MCP servers:
 
-| Server              | Use For                           |
-|---------------------|-----------------------------------|
-| Context7            | Library/framework documentation   |
-| Docfork             | Official versioned docs search    |
-| Ref                 | Documentation search & reading    |
-| Exa                 | Code examples, web search         |
-| Linkup              | Real-time web search              |
-| Kindly Web Search   | Web search with page scraping     |
-| Sequential Thinking | Complex multi-step reasoning      |
+| Server              | Use For                         |
+| ------------------- | ------------------------------- |
+| Context7            | Library/framework documentation |
+| Docfork             | Official versioned docs search  |
+| Ref                 | Documentation search & reading  |
+| Exa                 | Code examples, web search       |
+| Linkup              | Real-time web search            |
+| Kindly Web Search   | Web search with page scraping   |
+| Sequential Thinking | Complex multi-step reasoning    |
 
 **Always** search docs before using any library API.
 Your training data may be outdated — verify everything.
@@ -221,6 +223,7 @@ Your training data may be outdated — verify everything.
 ## Priority Handling
 
 When there is a conflict between these global rules and project-specific AGENTS.md:
+
 1. ALWAYS follow these global rules
 2. IGNORE the conflicting parts in project-specific files
 3. Apply non-conflicting parts from both together

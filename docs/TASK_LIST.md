@@ -1,9 +1,11 @@
 # FinSuite Task List
 
 ## [x] Finance Tools Audit
+
 A comprehensive list of finance tools available in the repository.
 
 ### Investment Calculators
+
 - **CAGR Calculator**: Compound Annual Growth Rate calculator.
 - **FIRE Calculator**: Financial Independence, Retire Early calculator.
 - **Goal Calculator**: Plan for specific financial goals.
@@ -17,11 +19,13 @@ A comprehensive list of finance tools available in the repository.
 - **FD Calculator**: Fixed Deposit returns calculator.
 
 ### Loans & Banking
+
 - **Car Loan Calculator**: Calculate EMI and interest for car loans.
 - **Home Loan Calculator**: Calculate EMI and interest for home loans.
 - **EMI Calculator**: General Purpose Loan EMI calculator (internal to loan apps).
 
 ### Tax & Salary
+
 - **Take Home Salary Calculator**: Calculate net pay after taxes and deductions.
 - **TDS Calculator**: Tax Deducted at Source calculator.
 - **GST Calculator**: Goods and Services Tax calculator.
@@ -29,6 +33,7 @@ A comprehensive list of finance tools available in the repository.
 - **Tax Calculator**: Comprehensive income tax calculator.
 
 ### Market & Crypto
+
 - **Crypto Dashboard**: Track cryptocurrency prices and trends.
 - **Currency Converter**: Real-time currency exchange rates.
 - **Gold Tracker**: Track gold and precious metal prices.
@@ -37,6 +42,7 @@ A comprehensive list of finance tools available in the repository.
 - **Market Service**: Centralized service for market data.
 
 ### Utilities
+
 - **QR Code Generator**: Generate payment QR codes.
 - **Tech News**: Financial and technology news aggregator.
 - **Utility Service**: Common helper functions for finance apps.

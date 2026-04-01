@@ -42,6 +42,7 @@ If you find this useful, **please give it a ⭐**! It helps others discover this
 <td width="50%">
 
 ### 🧮 40+ Financial Calculators
+
 - SIP, Lumpsum, EMI, FD, RD, PPF, NPS
 - FIRE Calculator, Goal Planner
 - Tax calculators (India-specific)
@@ -52,6 +53,7 @@ If you find this useful, **please give it a ⭐**! It helps others discover this
 <td width="50%">
 
 ### 🤖 AI-Powered Insights
+
 - Smart financial recommendations
 - Personalized analysis via Puter.js
 - Contextual tips for each calculation
@@ -63,6 +65,7 @@ If you find this useful, **please give it a ⭐**! It helps others discover this
 <td>
 
 ### 🎨 Premium UI/UX
+
 - Liquid Glass design system
 - Dark mode optimized
 - Fully responsive (mobile-first)
@@ -73,6 +76,7 @@ If you find this useful, **please give it a ⭐**! It helps others discover this
 <td>
 
 ### 🚀 Zero-Server Architecture
+
 - 100% static deployment
 - Works offline (PWA-ready)
 - Deploys to 6+ platforms
@@ -88,91 +92,99 @@ If you find this useful, **please give it a ⭐**! It helps others discover this
 
 FinSuite is deployed across **6 platforms** for maximum availability:
 
-| Platform | URL | Status |
-|----------|-----|--------|
-| **Cloudflare Pages** (Primary) | [money.chirag127.in](https://money.chirag127.in) | ![CF](https://img.shields.io/badge/status-live-success) |
-| **Netlify** | [finsuite.netlify.app](https://finsuite.netlify.app) | ![Netlify](https://img.shields.io/badge/status-live-success) |
-| **Vercel** | [finsuite.vercel.app](https://finsuite.vercel.app) | ![Vercel](https://img.shields.io/badge/status-live-success) |
-| **Surge** | [finsuite.surge.sh](https://finsuite.surge.sh) | ![Surge](https://img.shields.io/badge/status-live-success) |
-| **Neocities** | [chirag127.neocities.org](https://chirag127.neocities.org) | ![Neocities](https://img.shields.io/badge/status-live-success) |
-| **GitHub Pages** | [chirag127.github.io/finsuite](https://chirag127.github.io/finsuite) | ![GH Pages](https://img.shields.io/badge/status-live-success) |
+| Platform                       | URL                                                                  | Status                                                         |
+| ------------------------------ | -------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Cloudflare Pages** (Primary) | [money.chirag127.in](https://money.chirag127.in)                     | ![CF](https://img.shields.io/badge/status-live-success)        |
+| **Netlify**                    | [finsuite.netlify.app](https://finsuite.netlify.app)                 | ![Netlify](https://img.shields.io/badge/status-live-success)   |
+| **Vercel**                     | [finsuite.vercel.app](https://finsuite.vercel.app)                   | ![Vercel](https://img.shields.io/badge/status-live-success)    |
+| **Surge**                      | [finsuite.surge.sh](https://finsuite.surge.sh)                       | ![Surge](https://img.shields.io/badge/status-live-success)     |
+| **Neocities**                  | [chirag127.neocities.org](https://chirag127.neocities.org)           | ![Neocities](https://img.shields.io/badge/status-live-success) |
+| **GitHub Pages**               | [chirag127.github.io/finsuite](https://chirag127.github.io/finsuite) | ![GH Pages](https://img.shields.io/badge/status-live-success)  |
 
 ---
 
 ## 🧮 Calculators
 
 ### 💰 Banking & Savings
-| Calculator | Description |
-|------------|-------------|
-| 📊 FD Calculator | Fixed Deposit maturity with compounding |
-| 🔄 RD Calculator | Recurring Deposit growth projections |
+
+| Calculator        | Description                                 |
+| ----------------- | ------------------------------------------- |
+| 📊 FD Calculator  | Fixed Deposit maturity with compounding     |
+| 🔄 RD Calculator  | Recurring Deposit growth projections        |
 | 🏦 PPF Calculator | Public Provident Fund with 15-year maturity |
-| 👶 SSY Calculator | Sukanya Samriddhi Yojana |
-| 📈 NPS Calculator | National Pension Scheme retirement corpus |
-| 🚗 Car Loan | EMI calculator with amortization |
-| 🏠 Home Loan | Full amortization schedule |
+| 👶 SSY Calculator | Sukanya Samriddhi Yojana                    |
+| 📈 NPS Calculator | National Pension Scheme retirement corpus   |
+| 🚗 Car Loan       | EMI calculator with amortization            |
+| 🏠 Home Loan      | Full amortization schedule                  |
 
 ### 📈 Investments
-| Calculator | Description |
-|------------|-------------|
-| 💹 SIP Calculator | Systematic Investment Plan |
-| 💰 Lumpsum | One-time investment growth |
-| 📉 SWP Calculator | Systematic Withdrawal Plan |
-| 📊 Step-Up SIP | Annual increment SIP |
-| 🎯 Goal Planner | Target-based investment planning |
-| 🔥 FIRE Calculator | Financial Independence planning |
-| 📈 CAGR Calculator | Compound Annual Growth Rate |
-| 🔄 XIRR Calculator | Returns on irregular cash flows |
-| 📜 NSC Calculator | National Savings Certificate |
+
+| Calculator         | Description                      |
+| ------------------ | -------------------------------- |
+| 💹 SIP Calculator  | Systematic Investment Plan       |
+| 💰 Lumpsum         | One-time investment growth       |
+| 📉 SWP Calculator  | Systematic Withdrawal Plan       |
+| 📊 Step-Up SIP     | Annual increment SIP             |
+| 🎯 Goal Planner    | Target-based investment planning |
+| 🔥 FIRE Calculator | Financial Independence planning  |
+| 📈 CAGR Calculator | Compound Annual Growth Rate      |
+| 🔄 XIRR Calculator | Returns on irregular cash flows  |
+| 📜 NSC Calculator  | National Savings Certificate     |
 
 ### 🏠 Loans & EMI
-| Calculator | Description |
-|------------|-------------|
-| 💳 Personal Loan | Flat vs Reducing rate comparison |
-| 🎓 Education Loan | With moratorium period |
-| ⚖️ Loan Comparison | Side-by-side offer comparison |
-| 💵 Prepayment Calculator | Impact of extra payments |
-| ✅ Loan Eligibility | FOIR-based approval chances |
-| ⏸️ Moratorium Calculator | Cost of deferring EMI |
+
+| Calculator               | Description                      |
+| ------------------------ | -------------------------------- |
+| 💳 Personal Loan         | Flat vs Reducing rate comparison |
+| 🎓 Education Loan        | With moratorium period           |
+| ⚖️ Loan Comparison       | Side-by-side offer comparison    |
+| 💵 Prepayment Calculator | Impact of extra payments         |
+| ✅ Loan Eligibility      | FOIR-based approval chances      |
+| ⏸️ Moratorium Calculator | Cost of deferring EMI            |
 
 ### 🧾 Tax & Salary
-| Calculator | Description |
-|------------|-------------|
-| 🏷️ TDS Calculator | Tax Deducted at Source |
-| 💵 Take-Home Calculator | CTC to in-hand salary |
-| 🎁 Gratuity Calculator | End-of-service benefit |
-| 🏖️ Leave Encashment | Unused leave payment |
-| 🏠 HRA Calculator | House Rent Allowance exemption |
-| 🧾 GST Calculator | Inclusive/exclusive tax |
+
+| Calculator              | Description                    |
+| ----------------------- | ------------------------------ |
+| 🏷️ TDS Calculator       | Tax Deducted at Source         |
+| 💵 Take-Home Calculator | CTC to in-hand salary          |
+| 🎁 Gratuity Calculator  | End-of-service benefit         |
+| 🏖️ Leave Encashment     | Unused leave payment           |
+| 🏠 HRA Calculator       | House Rent Allowance exemption |
+| 🧾 GST Calculator       | Inclusive/exclusive tax        |
 
 ### 🔢 General Finance
-| Calculator | Description |
-|------------|-------------|
-| 📉 Inflation Calculator | Future purchasing power |
-| 📊 Simple Interest | Basic interest calculation |
-| 📈 Compound Interest | Frequency comparison |
-| ⏰ Rule of 72 | Doubling time estimation |
-| 💪 Purchasing Power | Inflation impact |
+
+| Calculator              | Description                |
+| ----------------------- | -------------------------- |
+| 📉 Inflation Calculator | Future purchasing power    |
+| 📊 Simple Interest      | Basic interest calculation |
+| 📈 Compound Interest    | Frequency comparison       |
+| ⏰ Rule of 72           | Doubling time estimation   |
+| 💪 Purchasing Power     | Inflation impact           |
 
 ### 🌐 Market & Crypto
-| Calculator | Description |
-|------------|-------------|
-| 🥇 Gold Tracker | Live gold/silver prices |
-| ₿ Satoshi Converter | BTC unit conversion |
-| 📰 Financial News | Live market news feed |
+
+| Calculator          | Description             |
+| ------------------- | ----------------------- |
+| 🥇 Gold Tracker     | Live gold/silver prices |
+| ₿ Satoshi Converter | BTC unit conversion     |
+| 📰 Financial News   | Live market news feed   |
 
 ### 🛠️ Utilities
-| Tool | Description |
-|------|-------------|
-| 🌤️ Weather | Current weather lookup |
-| 📍 IP Lookup | Geolocation info |
-| 🚀 Speed Test | Internet speed check |
+
+| Tool          | Description            |
+| ------------- | ---------------------- |
+| 🌤️ Weather    | Current weather lookup |
+| 📍 IP Lookup  | Geolocation info       |
+| 🚀 Speed Test | Internet speed check   |
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - npm or pnpm
 
@@ -269,17 +281,17 @@ GH_TOKEN=your_token
   <img src="https://skillicons.dev/icons?i=ts,vite,html,css,js,cloudflare,netlify,vercel,github" alt="Tech Stack">
 </p>
 
-| Category | Technologies |
-|----------|-------------|
-| **Language** | TypeScript |
-| **Build Tool** | Vite |
-| **Styling** | Vanilla CSS (Liquid Glass Design) |
-| **Charts** | Chart.js |
-| **AI** | Puter.js |
-| **Hosting** | Cloudflare Pages, Netlify, Vercel, Surge, Neocities, GitHub Pages |
-| **Analytics** | GA4, Clarity, Yandex, Mixpanel, Amplitude, Heap, GoatCounter, Cloudflare |
-| **Error Tracking** | Sentry, Honeybadger, Rollbar, Bugsnag, Cronitor |
-| **Live Chat** | Tawk.to |
+| Category           | Technologies                                                             |
+| ------------------ | ------------------------------------------------------------------------ |
+| **Language**       | TypeScript                                                               |
+| **Build Tool**     | Vite                                                                     |
+| **Styling**        | Vanilla CSS (Liquid Glass Design)                                        |
+| **Charts**         | Chart.js                                                                 |
+| **AI**             | Puter.js                                                                 |
+| **Hosting**        | Cloudflare Pages, Netlify, Vercel, Surge, Neocities, GitHub Pages        |
+| **Analytics**      | GA4, Clarity, Yandex, Mixpanel, Amplitude, Heap, GoatCounter, Cloudflare |
+| **Error Tracking** | Sentry, Honeybadger, Rollbar, Bugsnag, Cronitor                          |
+| **Live Chat**      | Tawk.to                                                                  |
 
 ---
 
@@ -288,6 +300,7 @@ GH_TOKEN=your_token
 FinSuite includes **8-layer analytics** and **5-layer error tracking** for comprehensive visibility:
 
 ### Analytics
+
 - 📈 Google Analytics 4
 - 🔍 Microsoft Clarity (Heatmaps)
 - 📊 Yandex Metrica (Session Replay)
@@ -298,6 +311,7 @@ FinSuite includes **8-layer analytics** and **5-layer error tracking** for compr
 - 🔥 Heap (Auto-capture)
 
 ### Error Tracking
+
 - 🛡️ Sentry
 - 🍯 Honeybadger
 - 🎲 Rollbar
@@ -317,6 +331,7 @@ Contributions are welcome! Here's how you can help:
 5. **Open** a Pull Request
 
 ### Ideas for Contributions
+
 - [ ] Add more India-specific calculators
 - [ ] Implement PWA offline support
 - [ ] Add multi-currency support

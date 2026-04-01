@@ -3,7 +3,7 @@ description: Deploy the application to Cloudflare Pages
 ---
 
 1. Build the production bundle
-// turbo
+   // turbo
 2. npm run build
 
 3. Deploy using Wrangler
