@@ -1,0 +1,157 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import { SITE_CONFIG } from '~/lib/siteConfig'
+
+const calculatorGroups = [
+  {
+    title: 'Investments',
+    items: ['SIP', 'Lumpsum', 'Step-up SIP', 'SWP', 'CAGR / XIRR', 'Goal planner', 'FIRE'],
+  },
+  {
+    title: 'Loans & EMI',
+    items: ['Home loan EMI', 'Car loan', 'Personal loan', 'Prepayment impact', 'Loan comparison', 'Eligibility / FOIR'],
+  },
+  {
+    title: 'Banking & savings',
+    items: ['FD', 'RD', 'PPF', 'NPS', 'NSC', 'SSY', 'Compound interest'],
+  },
+  {
+    title: 'Tax & salary',
+    items: ['Take-home (CTC → in-hand)', 'TDS', 'HRA exemption', 'Gratuity', 'Leave encashment', 'GST'],
+  },
+]
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: `${SITE_CONFIG.name} — oriz`,
+  url: SITE_CONFIG.origin,
+  description: SITE_CONFIG.description,
+  publisher: { '@type': 'Person', name: 'Chirag Singhal', url: 'https://oriz.in/about/' },
+}
+---
+
+<BaseLayout jsonLd={jsonLd}>
+  <section class="hero">
+    <div class="container-page hero-inner">
+      <p class="eyebrow">📊 Part of the <a href="https://oriz.in">oriz</a> family</p>
+      <h1 class="hero-h">
+        Calculators that<br />
+        <span class="hero-accent">show the math</span>.
+      </h1>
+      <p class="hero-lede">
+        {SITE_CONFIG.tagline}. Every input mapped to every output, with the
+        formula on screen — not a black box.
+      </p>
+      <div class="hero-cta">
+        <a href="#calculators" class="btn btn-primary">Browse calculators →</a>
+        <a href="/about/" class="btn">About this site</a>
+      </div>
+    </div>
+  </section>
+
+  <section id="calculators" class="container-page section">
+    <h2 class="section-h">Calculators</h2>
+    <p class="section-lede">
+      The new {SITE_CONFIG.name} site is being rebuilt on the shared oriz design
+      system. The legacy app under this repo continues to run; the catalogue
+      below is what lands here next.
+    </p>
+
+    <div class="cat-grid">
+      {calculatorGroups.map((g) => (
+        <div class="cat">
+          <h3 class="cat-h">{g.title}</h3>
+          <ul class="cat-list">
+            {g.items.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="container-page section">
+    <h2 class="section-h">How {SITE_CONFIG.name} stays free</h2>
+    <div class="prose">
+      <p>
+        Every calculator is a static page. The math runs in your browser — no
+        inputs ever leave your device, no account is needed to use a calculator.
+        Sign-in is optional and only powers cross-site features (saved
+        scenarios, bookmarks) that follow you across the oriz family.
+      </p>
+      <p>
+        Display ads on a few pages cover the domain renewal. Nothing is gated.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero { padding-block: 5rem 4rem; border-bottom: 1px solid var(--color-border); }
+  .hero-inner { max-width: 720px; margin-inline: auto; text-align: center; }
+  .eyebrow {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    color: var(--color-fg-muted);
+    font-size: 0.75rem;
+    margin: 0 0 1.5rem;
+  }
+  .eyebrow a { color: var(--color-fg-muted); }
+  .eyebrow a:hover { color: var(--color-accent); }
+  .hero-h {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin: 0 0 1.25rem;
+  }
+  .hero-accent { color: var(--color-accent); }
+  .hero-lede { color: var(--color-fg-muted); font-size: 1.125rem; max-width: 56ch; margin: 0 auto 2rem; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    height: 44px; padding-inline: 1.25rem;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-button);
+    color: var(--color-fg); font-weight: 500; text-decoration: none;
+  }
+  .btn:hover { border-color: color-mix(in oklab, var(--color-accent) 50%, var(--color-border)); color: var(--color-fg); }
+  .btn-primary { background: var(--color-accent); color: var(--color-accent-fg); border-color: var(--color-accent); }
+  .btn-primary:hover { color: var(--color-accent-fg); }
+
+  .section { padding-block: 4rem; }
+  .section-h {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin: 0 0 1rem;
+  }
+  .section-lede { color: var(--color-fg-muted); max-width: 64ch; margin: 0 0 2.5rem; font-size: 1.0625rem; }
+
+  .cat-grid {
+    display: grid; gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .cat {
+    padding: 1.25rem;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+  }
+  .cat-h {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--color-fg-muted); margin: 0 0 0.75rem;
+  }
+  .cat-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.375rem; color: var(--color-fg); font-size: 0.9375rem; }
+
+  .prose { color: var(--color-prose); max-width: 64ch; line-height: 1.7; }
+  .prose p { margin: 0 0 1.25rem; }
+</style>

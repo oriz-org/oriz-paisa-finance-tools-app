@@ -320,3 +320,12 @@ package-lock.json
 build_error.txt
 lint_log.txt
 lint_output.txt
+
+# oriz Astro scaffold
+.astro
+.wrangler
+.env.example.lock
+
+# oriz Astro scaffold needs src/lib (unignore the Python "lib/" rule)
+!src/lib/
+!src/lib/**
