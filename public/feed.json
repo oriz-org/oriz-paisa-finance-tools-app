@@ -1,0 +1,20 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "oriz · finance",
+  "home_page_url": "https://finance.oriz.in",
+  "feed_url": "https://finance.oriz.in/feed.json",
+  "description": "SIP, EMI, FIRE, tax — calculators that show the math.",
+  "language": "en",
+  "authors": [
+    { "name": "Chirag Singhal", "url": "https://me.oriz.in" }
+  ],
+  "items": [
+    {
+      "id": "https://finance.oriz.in",
+      "url": "https://finance.oriz.in",
+      "title": "oriz-finance launches: free, browser-only calculators",
+      "content_text": "SIP, lumpsum, step-up SIP, SWP, FIRE, EMI, FD, RD, PPF, NPS, take-home, HRA, GST — all in your browser, nothing leaves the device.",
+      "date_published": "2026-06-20T00:00:00Z"
+    }
+  ]
+}

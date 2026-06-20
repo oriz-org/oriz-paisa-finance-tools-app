@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>oriz · finance</title>
+  <subtitle>SIP, EMI, FIRE, tax — calculators that show the math.</subtitle>
+  <link href="https://finance.oriz.in/atom.xml" rel="self" />
+  <link href="https://finance.oriz.in" />
+  <link href="https://oriz.in/atom.xml" rel="alternate" />
+  <id>https://finance.oriz.in/</id>
+  <updated>2026-06-20T00:00:00Z</updated>
+  <author>
+    <name>Chirag Singhal</name>
+    <uri>https://me.oriz.in</uri>
+  </author>
+
+  <!-- Placeholder feed; see knowledge/decisions/architecture/feeds-rss-atom-json.md. -->
+  <entry>
+    <title>oriz-finance launches: free, browser-only calculators</title>
+    <link href="https://finance.oriz.in" />
+    <id>https://finance.oriz.in</id>
+    <updated>2026-06-20T00:00:00Z</updated>
+    <summary>SIP, lumpsum, step-up SIP, SWP, FIRE, EMI, FD, RD, PPF, NPS, take-home, HRA, GST — all in your browser, nothing leaves the device.</summary>
+  </entry>
+</feed>

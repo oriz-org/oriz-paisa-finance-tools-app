@@ -1,0 +1,104 @@
+---
+/*
+ * /dashboard — placeholder for the live-markets dashboard.
+ *
+ * This page is the intended home of the <MarketDataChart /> island
+ * (forward-ref to @chirag127/oriz-kit; see knowledge/glossary/o-r/oriz-kit.md
+ * for the kit contract). The component will read from a CF Worker
+ * proxy at PUBLIC_ALPHA_VANTAGE_PROXY that fronts the Alpha Vantage
+ * free-tier API and caches responses in CF KV (12h TTL keyed by
+ * `<symbol>:<interval>`) — see ops/alpha-vantage-cache.md.
+ *
+ * TODO (when oriz-kit publishes <MarketDataChart />):
+ *   1. `pnpm add @chirag127/oriz-kit`
+ *   2. import { MarketDataChart } from '@chirag127/oriz-kit'
+ *   3. <MarketDataChart client:idle symbol="^NSEI" interval="60min" />
+ *   4. Mount the kit's <SymbolPicker /> alongside it for symbol switching.
+ *   5. Drop the placeholder block below.
+ *
+ * Until then the page is `noindex` so it doesn't ship a stub to search
+ * engines.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import { SITE_CONFIG } from '~/lib/siteConfig'
+---
+
+<BaseLayout
+  title={`Dashboard — ${SITE_CONFIG.name}`}
+  description="Live-markets dashboard placeholder. Charts arrive when oriz-kit ships <MarketDataChart />."
+  noindex={true}
+>
+  <header class="prose-spine page-head">
+    <p class="eyebrow"><a href="/">finance</a> / dashboard</p>
+    <h1>Markets dashboard</h1>
+  </header>
+
+  <article class="prose-spine prose">
+    <p class="lede">
+      A live-markets dashboard for Indian indices, FX, and government bond
+      yields lives here.
+    </p>
+
+    <p>
+      <strong>Status:</strong> placeholder. The
+      <code>&lt;MarketDataChart /&gt;</code> React island is being built in
+      <a href="https://github.com/chirag127/oriz-kit"><code>@chirag127/oriz-kit</code></a>;
+      this page will mount it as soon as the kit publishes. The chart reads
+      from a Cloudflare Worker proxy at
+      <code>PUBLIC_ALPHA_VANTAGE_PROXY</code> which fronts the
+      <a href="https://www.alphavantage.co/">Alpha Vantage</a> free-tier
+      API and caches responses in CF KV with a 12-hour TTL keyed by
+      <code>&lt;symbol&gt;:&lt;interval&gt;</code>.
+    </p>
+
+    <h2>Why a proxy + cache</h2>
+    <p>
+      Alpha Vantage's free tier allows <strong>25 requests/day</strong> and
+      <strong>5 requests/minute</strong>. A static site that fanned out to
+      the API from every visitor's browser would burn the daily quota in
+      seconds. The Worker fronts every request, serves from KV when fresh,
+      and only spends a quota call on cache miss. Every visitor sees the
+      cached response — the daily quota covers the entire site.
+    </p>
+
+    <h2>What you'll see here</h2>
+    <ul>
+      <li>NIFTY 50, NIFTY Bank, SENSEX — 60-minute candlesticks</li>
+      <li>USD/INR, EUR/INR, GBP/INR — daily lines</li>
+      <li>10-year G-Sec yield — daily line, last 90 days</li>
+      <li>Click any series → opens the underlying calculator with the live value pre-filled</li>
+    </ul>
+
+    <p class="muted">
+      Want to be told when this ships?
+      <a href="https://buttondown.email/chirag127">Subscribe to the newsletter</a>.
+    </p>
+  </article>
+</BaseLayout>
+
+<style>
+  .page-head {
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin: 0 0 0.5rem;
+  }
+  .prose .lede {
+    font-size: 1.125rem;
+    color: var(--ink-mute);
+  }
+  .muted {
+    color: var(--ink-mute);
+    font-size: 0.875rem;
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+</style>

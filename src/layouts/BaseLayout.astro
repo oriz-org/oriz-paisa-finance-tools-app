@@ -7,11 +7,21 @@
  *
  * No theme picker — light/dark via prefers-color-scheme only. The dark
  * variant is a recessed inversion that keeps the graph grid visible.
+ *
+ * 2026-06-20 wiring (this commit):
+ *   • Default <JsonLd> Organization + WebSite + Person triple in <head>.
+ *   • Page-level `jsonLd` prop appends additional blocks (no replacement).
+ *   • <FeedDiscovery /> link tags for /rss.xml + /atom.xml + /feed.json.
+ *   • CF Web Analytics gated behind PUBLIC_ENABLE_CF_ANALYTICS=true.
+ *   • <ConsentBanner /> mounted before </body> — Klaro lazy script.
+ *   • Header now mounts <StatusBanner /> + <MultiSearch /> as React islands.
  */
 import '~/styles/global.css'
 import '~/styles/oriz-ui-overrides.css'
+import ConsentBanner from '~/components/ConsentBanner.astro'
 import Footer from '~/components/Footer.astro'
 import Header from '~/components/Header.astro'
+import JsonLd from '~/components/JsonLd.astro'
 import { SITE_CONFIG } from '~/lib/siteConfig'
 
 interface Props {
@@ -19,6 +29,7 @@ interface Props {
   description?: string
   canonical?: string
   noindex?: boolean
+  /** Page-level JSON-LD blocks appended to the default Org+WebSite+Person triple. */
   jsonLd?: Record<string, unknown> | Record<string, unknown>[]
 }
 
@@ -32,6 +43,7 @@ const {
 
 const adsenseClient = import.meta.env.PUBLIC_ADSENSE_CLIENT
 const beaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN
+const cfAnalyticsEnabled = import.meta.env.PUBLIC_ENABLE_CF_ANALYTICS === 'true'
 ---
 
 <!doctype html>
@@ -56,6 +68,15 @@ const beaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     {/*
+      Feed discovery — three formats per
+      knowledge/decisions/architecture/feeds-rss-atom-json.md.
+      Cross-link to canonical apex feeds (oriz.in) from every site.
+    */}
+    <link rel="alternate" type="application/rss+xml" title="oriz · RSS" href="/rss.xml" />
+    <link rel="alternate" type="application/atom+xml" title="oriz · Atom" href="/atom.xml" />
+    <link rel="alternate" type="application/feed+json" title="oriz · JSON Feed" href="/feed.json" />
+
+    {/*
       Type stack — Fraunces (display, opsz 144 + soft -10), Source Sans 3
       (body), JetBrains Mono (numerics).
     */}
@@ -66,15 +87,8 @@ const beaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,30..100&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
     />
 
-    {
-      jsonLd && (
-        <script
-          is:inline
-          type="application/ld+json"
-          set:html={JSON.stringify(Array.isArray(jsonLd) ? jsonLd : [jsonLd])}
-        />
-      )
-    }
+    {/* Default Organization + WebSite + Person triple. */}
+    <JsonLd extra={jsonLd} pageUrl={canonical} />
 
     {
       adsenseClient && (
@@ -87,8 +101,9 @@ const beaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN
       )
     }
 
+    {/* Cloudflare Web Analytics — cookie-less, gated by PUBLIC_ENABLE_CF_ANALYTICS. */}
     {
-      beaconToken && (
+      cfAnalyticsEnabled && beaconToken && (
         <script
           is:inline
           defer
@@ -103,5 +118,6 @@ const beaconToken = import.meta.env.PUBLIC_CF_BEACON_TOKEN
     <Header />
     <main id="main"><slot /></main>
     <Footer />
+    <ConsentBanner />
   </body>
 </html>
