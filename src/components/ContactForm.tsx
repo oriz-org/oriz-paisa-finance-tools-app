@@ -2,8 +2,7 @@
  * ContactForm — local, dependency-free copy that emits the canonical
  * `data-oriz-contact-*` selector hooks. Posts to Web3Forms.
  *
- * The shared @chirag127/contact-form package uses react-hook-form + zod;
- * this site keeps deps minimal so we use plain React state + a tiny
+ * This site keeps deps minimal so we use plain React state + a tiny
  * validator. The hook contract (the data attributes) is identical so the
  * shared CSS in oriz-ui-overrides.css applies unchanged.
  */

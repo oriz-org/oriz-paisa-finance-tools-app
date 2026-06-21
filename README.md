@@ -70,7 +70,7 @@ different:
    (saved scenarios, bookmarks) via shared Firebase Auth on `auth.oriz.in`.
 3. **One markets dashboard, fronted by a cache.** `/dashboard` (placeholder
    today) hosts a live-markets view via the forward-ref
-   `<MarketDataChart />` island in `@chirag127/oriz-kit`.
+   `<MarketDataChart />` island.
 
 The shared site shell wires four locked components into every page via
 `BaseLayout.astro`: `<MultiSearch />` (multi-engine search popover),

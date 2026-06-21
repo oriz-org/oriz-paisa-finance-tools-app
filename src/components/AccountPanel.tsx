@@ -1,12 +1,3 @@
-/*
- * AccountPanel — local copy of @chirag127/auth-ui's AccountPanel, emitting
- * the canonical `data-oriz-account-*` selector hooks. Styling lives in
- * src/styles/oriz-ui-overrides.css.
- *
- * Why local: the @chirag127/oriz-ui v2.0.0 shim re-exports from a
- * file:../auth-ui workspace path that doesn't resolve through a GitHub
- * tarball. Until auth-ui ships to npm every site keeps a local copy.
- */
 import {
   GithubAuthProvider,
   GoogleAuthProvider,

@@ -2,22 +2,13 @@
 /*
  * /dashboard — placeholder for the live-markets dashboard.
  *
- * This page is the intended home of the <MarketDataChart /> island
- * (forward-ref to @chirag127/oriz-kit; see knowledge/glossary/o-r/oriz-kit.md
- * for the kit contract). The component will read from a CF Worker
- * proxy at PUBLIC_ALPHA_VANTAGE_PROXY that fronts the Alpha Vantage
- * free-tier API and caches responses in CF KV (12h TTL keyed by
- * `<symbol>:<interval>`) — see ops/alpha-vantage-cache.md.
+ * The <MarketDataChart /> island will read from a CF Worker proxy at
+ * PUBLIC_ALPHA_VANTAGE_PROXY that fronts the Alpha Vantage free-tier API
+ * and caches responses in CF KV (12h TTL keyed by `<symbol>:<interval>`)
+ * — see ops/alpha-vantage-cache.md.
  *
- * TODO (when oriz-kit publishes <MarketDataChart />):
- *   1. `pnpm add @chirag127/oriz-kit`
- *   2. import { MarketDataChart } from '@chirag127/oriz-kit'
- *   3. <MarketDataChart client:idle symbol="^NSEI" interval="60min" />
- *   4. Mount the kit's <SymbolPicker /> alongside it for symbol switching.
- *   5. Drop the placeholder block below.
- *
- * Until then the page is `noindex` so it doesn't ship a stub to search
- * engines.
+ * Until the chart island lands the page is `noindex` so it doesn't ship a
+ * stub to search engines.
  */
 import BaseLayout from '~/layouts/BaseLayout.astro'
 import { SITE_CONFIG } from '~/lib/siteConfig'
@@ -25,7 +16,7 @@ import { SITE_CONFIG } from '~/lib/siteConfig'
 
 <BaseLayout
   title={`Dashboard — ${SITE_CONFIG.name}`}
-  description="Live-markets dashboard placeholder. Charts arrive when oriz-kit ships <MarketDataChart />."
+  description="Live-markets dashboard placeholder. Charts arrive when <MarketDataChart /> ships."
   noindex={true}
 >
   <header class="prose-spine page-head">
@@ -41,9 +32,8 @@ import { SITE_CONFIG } from '~/lib/siteConfig'
 
     <p>
       <strong>Status:</strong> placeholder. The
-      <code>&lt;MarketDataChart /&gt;</code> React island is being built in
-      <a href="https://github.com/chirag127/oriz-kit"><code>@chirag127/oriz-kit</code></a>;
-      this page will mount it as soon as the kit publishes. The chart reads
+      <code>&lt;MarketDataChart /&gt;</code> React island is in flight;
+      this page will mount it as soon as it lands. The chart reads
       from a Cloudflare Worker proxy at
       <code>PUBLIC_ALPHA_VANTAGE_PROXY</code> which fronts the
       <a href="https://www.alphavantage.co/">Alpha Vantage</a> free-tier
