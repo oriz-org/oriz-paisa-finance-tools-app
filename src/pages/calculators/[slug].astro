@@ -3,10 +3,10 @@ import SIPCalculator from '~/components/calculators/SIPCalculator.tsx'
 /*
  * /calculators/[slug] — calculator detail page.
  *
- * SIP is the one wired-up calculator (the working example, end-to-end). The
- * other 27 slugs hit a "coming soon" stub that still uses the same chrome
- * and breadcrumb-as-ledger so the URL space is consistent and the Footer's
- * leader-dotted index works for every entry.
+ * SIP keeps the original React calculator (the working example with full
+ * three-column chrome). Every other slug now ships a self-contained
+ * client-side calculator built from native form controls + Math only.
+ * No npm deps added; computation runs in the browser, inputs never leave.
  *
  * Static route generation is gated by `getStaticPaths`. Astro's `output:
  * 'static'` mode emits one HTML file per slug from the catalogue.
@@ -24,6 +24,560 @@ if (!calc) {
   return Astro.redirect('/#catalogue')
 }
 const ledgerLabel = LEDGERS.find((l) => l.key === calc.ledger)?.label ?? ''
+
+/* ------------------------------------------------------------------
+ * Per-slug calculator definitions. Each entry is a small UI schema:
+ *   - inputs: list of {id, label, type, default, hint?, step?, min?, max?}
+ *   - run: a JS expression body that reads inputs (as numbers) from a
+ *     `v` object and returns {rows: [{k,v}]}. The body is embedded as
+ *     a client-side Function — built at page load, no live `eval`.
+ *   - notes: short description of the formula / assumptions.
+ *
+ * The runtime is shared (see the <script is:inline> at the bottom).
+ * ------------------------------------------------------------------ */
+
+type Inp = {
+  id: string
+  label: string
+  type: 'number' | 'select'
+  default: string | number
+  step?: number
+  min?: number
+  max?: number
+  options?: { value: string; label: string }[]
+}
+type Spec = { inputs: Inp[]; run: string; notes: string }
+
+const SPECS: Record<string, Spec> = {
+  lumpsum: {
+    inputs: [
+      { id: 'p', label: 'Principal (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'r', label: 'Expected return (% p.a.)', type: 'number', default: 12, step: 0.1 },
+      { id: 'y', label: 'Years', type: 'number', default: 10, min: 1 },
+    ],
+    run: `const fv = v.p * Math.pow(1 + v.r/100, v.y);
+return {rows:[
+  {k:'Invested', v: inr(v.p)},
+  {k:'Future value', v: inr(fv)},
+  {k:'Gain', v: inr(fv - v.p)},
+]};`,
+    notes: 'FV = P × (1 + r)ⁿ. Annual compounding.',
+  },
+  'step-up-sip': {
+    inputs: [
+      { id: 'm', label: 'Monthly SIP (₹)', type: 'number', default: 10000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 12, step: 0.1 },
+      { id: 'y', label: 'Years', type: 'number', default: 10, min: 1 },
+      { id: 's', label: 'Step-up (% p.a.)', type: 'number', default: 10, step: 0.5 },
+    ],
+    run: `let bal=0, contrib=0, sip=v.m, mr=v.r/1200;
+for (let yr=1; yr<=v.y; yr++) {
+  for (let k=0;k<12;k++){ bal = (bal + sip) * (1+mr); contrib += sip; }
+  sip = sip * (1 + v.s/100);
+}
+return {rows:[
+  {k:'Total contributions', v: inr(contrib)},
+  {k:'Future value', v: inr(bal)},
+  {k:'Gain', v: inr(bal - contrib)},
+]};`,
+    notes: 'SIP escalates annually by step-up %, compounded monthly.',
+  },
+  swp: {
+    inputs: [
+      { id: 'p', label: 'Corpus (₹)', type: 'number', default: 1000000, min: 0 },
+      { id: 'w', label: 'Monthly withdrawal (₹)', type: 'number', default: 10000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 8, step: 0.1 },
+      { id: 'y', label: 'Years', type: 'number', default: 10, min: 1 },
+    ],
+    run: `let bal=v.p, mr=v.r/1200, months=0, withdrawn=0;
+for (let i=0; i<v.y*12; i++) {
+  bal = bal*(1+mr) - v.w;
+  withdrawn += v.w; months++;
+  if (bal <= 0) { bal=0; break; }
+}
+return {rows:[
+  {k:'Withdrawn over period', v: inr(withdrawn)},
+  {k:'Months sustained', v: String(months)},
+  {k:'Balance at end', v: inr(Math.max(0,bal))},
+]};`,
+    notes: 'Balance grows monthly, withdrawal taken at month-end.',
+  },
+  cagr: {
+    inputs: [
+      { id: 'b', label: 'Beginning value (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'e', label: 'Ending value (₹)', type: 'number', default: 250000, min: 0 },
+      { id: 'y', label: 'Years', type: 'number', default: 5, step: 0.1, min: 0.01 },
+    ],
+    run: `const cagr = (Math.pow(v.e/v.b, 1/v.y) - 1) * 100;
+return {rows:[
+  {k:'CAGR', v: cagr.toFixed(2)+' %'},
+  {k:'Total return', v: ((v.e/v.b-1)*100).toFixed(2)+' %'},
+  {k:'Multiple', v: (v.e/v.b).toFixed(2)+'x'},
+]};`,
+    notes: 'CAGR = (End ÷ Start)^(1/n) − 1.',
+  },
+  'goal-planner': {
+    inputs: [
+      { id: 't', label: 'Target corpus (₹)', type: 'number', default: 5000000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 12, step: 0.1 },
+      { id: 'y', label: 'Years', type: 'number', default: 15, min: 1 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const sip = v.t * mr / (Math.pow(1+mr, n) - 1) / (1+mr);
+return {rows:[
+  {k:'Monthly SIP needed', v: inr(sip)},
+  {k:'Total contribution', v: inr(sip*n)},
+  {k:'Target', v: inr(v.t)},
+]};`,
+    notes: 'SIP = FV × i / ((1+i)ⁿ − 1) / (1+i), i = monthly rate.',
+  },
+  fire: {
+    inputs: [
+      { id: 'e', label: 'Annual expenses (₹)', type: 'number', default: 600000, min: 0 },
+      { id: 'c', label: 'Current corpus (₹)', type: 'number', default: 500000, min: 0 },
+      { id: 's', label: 'Annual savings (₹)', type: 'number', default: 300000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 10, step: 0.1 },
+      { id: 'w', label: 'Safe withdrawal (%)', type: 'number', default: 4, step: 0.1 },
+    ],
+    run: `const target = v.e * 100 / v.w;
+let bal=v.c, years=0;
+while (bal < target && years < 80) { bal = bal*(1+v.r/100) + v.s; years++; }
+return {rows:[
+  {k:'FIRE target', v: inr(target)},
+  {k:'Years to FIRE', v: years >= 80 ? '80+' : String(years)},
+  {k:'Final corpus', v: inr(bal)},
+]};`,
+    notes: 'FIRE target = annual expenses ÷ safe-withdrawal-rate.',
+  },
+  'home-loan-emi': {
+    inputs: [
+      { id: 'p', label: 'Loan amount (₹)', type: 'number', default: 5000000, min: 0 },
+      { id: 'r', label: 'Interest (% p.a.)', type: 'number', default: 8.5, step: 0.05 },
+      { id: 'y', label: 'Tenure (years)', type: 'number', default: 20, min: 1 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const emi = v.p*mr*Math.pow(1+mr,n) / (Math.pow(1+mr,n)-1);
+const total = emi*n;
+return {rows:[
+  {k:'EMI', v: inr(emi)},
+  {k:'Total payment', v: inr(total)},
+  {k:'Total interest', v: inr(total - v.p)},
+]};`,
+    notes: 'EMI = P × r × (1+r)ⁿ / ((1+r)ⁿ − 1), r = monthly rate.',
+  },
+  'car-loan': {
+    inputs: [
+      { id: 'p', label: 'Loan amount (₹)', type: 'number', default: 800000, min: 0 },
+      { id: 'r', label: 'Interest (% p.a.)', type: 'number', default: 9.5, step: 0.05 },
+      { id: 'y', label: 'Tenure (years)', type: 'number', default: 5, min: 1 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const emi = v.p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);
+return {rows:[
+  {k:'EMI', v: inr(emi)},
+  {k:'Total payment', v: inr(emi*n)},
+  {k:'Total interest', v: inr(emi*n - v.p)},
+]};`,
+    notes: 'Standard amortising EMI.',
+  },
+  'personal-loan': {
+    inputs: [
+      { id: 'p', label: 'Loan amount (₹)', type: 'number', default: 300000, min: 0 },
+      { id: 'r', label: 'Interest (% p.a.)', type: 'number', default: 14, step: 0.05 },
+      { id: 'y', label: 'Tenure (years)', type: 'number', default: 3, min: 1 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const emi = v.p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);
+return {rows:[
+  {k:'EMI', v: inr(emi)},
+  {k:'Total payment', v: inr(emi*n)},
+  {k:'Total interest', v: inr(emi*n - v.p)},
+]};`,
+    notes: 'Standard amortising EMI on unsecured loan.',
+  },
+  'prepayment-impact': {
+    inputs: [
+      { id: 'p', label: 'Loan amount (₹)', type: 'number', default: 5000000, min: 0 },
+      { id: 'r', label: 'Interest (% p.a.)', type: 'number', default: 8.5, step: 0.05 },
+      { id: 'y', label: 'Tenure (years)', type: 'number', default: 20, min: 1 },
+      { id: 'x', label: 'One-time prepayment (₹)', type: 'number', default: 500000, min: 0 },
+      { id: 'a', label: 'After year', type: 'number', default: 3, min: 1 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const emi = v.p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);
+let bal=v.p, paidI=0, m=0;
+for (m=1; m<=n; m++) {
+  const i = bal*mr; const pr = emi - i; paidI += i;
+  bal -= pr;
+  if (m === v.a*12) { bal -= v.x; if (bal <= 0) { bal=0; break; } }
+  if (bal <= 0) break;
+}
+const baseInt = emi*n - v.p;
+return {rows:[
+  {k:'Months saved', v: String(n - m)},
+  {k:'Interest paid with prepay', v: inr(paidI)},
+  {k:'Interest saved', v: inr(baseInt - paidI)},
+]};`,
+    notes: 'Prepayment at given year, EMI unchanged, tenure shortens.',
+  },
+  'loan-comparison': {
+    inputs: [
+      { id: 'p1', label: 'A: amount (₹)', type: 'number', default: 5000000, min: 0 },
+      { id: 'r1', label: 'A: rate (%)', type: 'number', default: 8.5, step: 0.05 },
+      { id: 'y1', label: 'A: years', type: 'number', default: 20, min: 1 },
+      { id: 'p2', label: 'B: amount (₹)', type: 'number', default: 5000000, min: 0 },
+      { id: 'r2', label: 'B: rate (%)', type: 'number', default: 9.0, step: 0.05 },
+      { id: 'y2', label: 'B: years', type: 'number', default: 15, min: 1 },
+    ],
+    run: `function emi(p,r,y){const mr=r/1200,n=y*12;return p*mr*Math.pow(1+mr,n)/(Math.pow(1+mr,n)-1);}
+const eA=emi(v.p1,v.r1,v.y1), eB=emi(v.p2,v.r2,v.y2);
+const tA=eA*v.y1*12, tB=eB*v.y2*12;
+return {rows:[
+  {k:'A: EMI', v: inr(eA)},
+  {k:'A: total paid', v: inr(tA)},
+  {k:'B: EMI', v: inr(eB)},
+  {k:'B: total paid', v: inr(tB)},
+  {k:'Cheaper total cost', v: tA < tB ? 'Loan A' : 'Loan B'},
+]};`,
+    notes: 'Side-by-side total payment cost.',
+  },
+  'eligibility-foir': {
+    inputs: [
+      { id: 'i', label: 'Monthly income (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'o', label: 'Existing obligations (₹/mo)', type: 'number', default: 10000, min: 0 },
+      { id: 'f', label: 'FOIR cap (%)', type: 'number', default: 50, step: 1 },
+      { id: 'r', label: 'Interest (% p.a.)', type: 'number', default: 8.5, step: 0.05 },
+      { id: 'y', label: 'Tenure (years)', type: 'number', default: 20, min: 1 },
+    ],
+    run: `const cap = v.i*v.f/100 - v.o;
+const mr=v.r/1200, n=v.y*12;
+const maxLoan = cap * (Math.pow(1+mr,n)-1) / (mr*Math.pow(1+mr,n));
+return {rows:[
+  {k:'Max EMI affordable', v: inr(cap)},
+  {k:'Max loan eligible', v: inr(Math.max(0,maxLoan))},
+  {k:'FOIR cap', v: v.f+' %'},
+]};`,
+    notes: 'FOIR = (EMIs + obligations) / income. Max loan = capacity × annuity factor.',
+  },
+  fd: {
+    inputs: [
+      { id: 'p', label: 'Deposit (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'r', label: 'Rate (% p.a.)', type: 'number', default: 7, step: 0.05 },
+      { id: 'y', label: 'Years', type: 'number', default: 5, step: 0.5, min: 0.25 },
+      {
+        id: 'f',
+        label: 'Compounding',
+        type: 'select',
+        default: '4',
+        options: [
+          { value: '1', label: 'Yearly' },
+          { value: '2', label: 'Half-yearly' },
+          { value: '4', label: 'Quarterly' },
+          { value: '12', label: 'Monthly' },
+        ],
+      },
+    ],
+    run: `const f=Number(v.f);
+const m = v.p * Math.pow(1 + v.r/100/f, f*v.y);
+return {rows:[
+  {k:'Deposit', v: inr(v.p)},
+  {k:'Maturity', v: inr(m)},
+  {k:'Interest', v: inr(m - v.p)},
+]};`,
+    notes: 'M = P × (1 + r/f)^(f×n), f = compounds per year.',
+  },
+  rd: {
+    inputs: [
+      { id: 'm', label: 'Monthly deposit (₹)', type: 'number', default: 5000, min: 0 },
+      { id: 'r', label: 'Rate (% p.a.)', type: 'number', default: 7, step: 0.05 },
+      { id: 'y', label: 'Years', type: 'number', default: 3, step: 0.25, min: 0.25 },
+    ],
+    run: `let bal=0, mr=v.r/1200, n=Math.round(v.y*12);
+for (let i=0;i<n;i++) bal = (bal + v.m)*(1+mr);
+return {rows:[
+  {k:'Total deposit', v: inr(v.m*n)},
+  {k:'Maturity', v: inr(bal)},
+  {k:'Interest', v: inr(bal - v.m*n)},
+]};`,
+    notes: 'Monthly deposit compounded monthly.',
+  },
+  ppf: {
+    inputs: [
+      { id: 'm', label: 'Annual contribution (₹)', type: 'number', default: 150000, min: 500, max: 150000 },
+      { id: 'r', label: 'PPF rate (% p.a.)', type: 'number', default: 7.1, step: 0.05 },
+      { id: 'y', label: 'Years', type: 'number', default: 15, min: 1 },
+    ],
+    run: `let bal=0;
+for (let i=0;i<v.y;i++) bal = (bal + v.m) * (1 + v.r/100);
+return {rows:[
+  {k:'Total invested', v: inr(v.m*v.y)},
+  {k:'Maturity', v: inr(bal)},
+  {k:'Interest', v: inr(bal - v.m*v.y)},
+]};`,
+    notes: 'Yearly compounding, deposit at start of year. Statutory cap ₹1.5L/yr.',
+  },
+  nps: {
+    inputs: [
+      { id: 'm', label: 'Monthly contribution (₹)', type: 'number', default: 5000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 10, step: 0.1 },
+      { id: 'y', label: 'Years to 60', type: 'number', default: 30, min: 1 },
+      { id: 'a', label: 'Annuity rate (%)', type: 'number', default: 6, step: 0.1 },
+      { id: 'l', label: 'Lump-sum %', type: 'number', default: 60, step: 5, min: 0, max: 60 },
+    ],
+    run: `const mr=v.r/1200, n=v.y*12;
+const fv = v.m * (Math.pow(1+mr,n)-1)/mr * (1+mr);
+const lump = fv * v.l/100;
+const annuityCorpus = fv - lump;
+const pension = annuityCorpus * v.a/100 / 12;
+return {rows:[
+  {k:'Final corpus', v: inr(fv)},
+  {k:'Lump-sum (tax-free)', v: inr(lump)},
+  {k:'Annuity corpus', v: inr(annuityCorpus)},
+  {k:'Monthly pension', v: inr(pension)},
+]};`,
+    notes: 'Up to 60% withdrawn tax-free, rest converted to annuity.',
+  },
+  nsc: {
+    inputs: [
+      { id: 'p', label: 'Investment (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'r', label: 'NSC rate (% p.a.)', type: 'number', default: 7.7, step: 0.05 },
+      { id: 'y', label: 'Years', type: 'number', default: 5, min: 1 },
+    ],
+    run: `const m = v.p * Math.pow(1+v.r/100, v.y);
+return {rows:[
+  {k:'Investment', v: inr(v.p)},
+  {k:'Maturity', v: inr(m)},
+  {k:'Interest', v: inr(m - v.p)},
+]};`,
+    notes: 'NSC: annually compounded, payable at maturity.',
+  },
+  ssy: {
+    inputs: [
+      { id: 'm', label: 'Annual deposit (₹)', type: 'number', default: 150000, min: 250, max: 150000 },
+      { id: 'r', label: 'SSY rate (% p.a.)', type: 'number', default: 8.2, step: 0.05 },
+    ],
+    run: `let bal=0;
+for (let i=0;i<15;i++) bal = (bal + v.m)*(1+v.r/100);
+for (let i=0;i<6;i++) bal = bal*(1+v.r/100);
+return {rows:[
+  {k:'Total deposited', v: inr(v.m*15)},
+  {k:'Maturity (21y)', v: inr(bal)},
+  {k:'Interest', v: inr(bal - v.m*15)},
+]};`,
+    notes: 'Sukanya Samriddhi: 15 years of deposit, matures at 21.',
+  },
+  'compound-interest': {
+    inputs: [
+      { id: 'p', label: 'Principal (₹)', type: 'number', default: 100000, min: 0 },
+      { id: 'r', label: 'Rate (% p.a.)', type: 'number', default: 8, step: 0.05 },
+      { id: 'y', label: 'Years', type: 'number', default: 10, step: 0.25 },
+      {
+        id: 'f',
+        label: 'Compounds / year',
+        type: 'select',
+        default: '4',
+        options: [
+          { value: '1', label: 'Yearly' },
+          { value: '2', label: 'Half-yearly' },
+          { value: '4', label: 'Quarterly' },
+          { value: '12', label: 'Monthly' },
+          { value: '365', label: 'Daily' },
+        ],
+      },
+    ],
+    run: `const f=Number(v.f);
+const a = v.p * Math.pow(1 + v.r/100/f, f*v.y);
+return {rows:[
+  {k:'Principal', v: inr(v.p)},
+  {k:'Amount', v: inr(a)},
+  {k:'Interest', v: inr(a - v.p)},
+]};`,
+    notes: 'A = P(1 + r/n)^(nt).',
+  },
+  'savings-goal': {
+    inputs: [
+      { id: 't', label: 'Target (₹)', type: 'number', default: 500000, min: 0 },
+      { id: 's', label: 'Monthly savings (₹)', type: 'number', default: 10000, min: 0 },
+      { id: 'r', label: 'Return (% p.a.)', type: 'number', default: 6, step: 0.1 },
+    ],
+    run: `const mr=v.r/1200;
+let n=0, bal=0;
+while (bal < v.t && n < 12*80) { bal = (bal + v.s)*(1+mr); n++; }
+const yrs = Math.floor(n/12), mo = n%12;
+return {rows:[
+  {k:'Months to target', v: String(n)},
+  {k:'Years / months', v: yrs+'y '+mo+'m'},
+  {k:'Total saved', v: inr(v.s*n)},
+]};`,
+    notes: 'Smallest n so monthly-compounded annuity reaches target.',
+  },
+  'take-home': {
+    inputs: [
+      { id: 'ctc', label: 'Annual CTC (₹)', type: 'number', default: 1500000, min: 0 },
+      { id: 'pf', label: 'PF + gratuity (% of CTC)', type: 'number', default: 8, step: 0.5 },
+      { id: 'tx', label: 'Effective tax (%)', type: 'number', default: 12, step: 0.5 },
+    ],
+    run: `const benefits = v.ctc * v.pf/100;
+const gross = v.ctc - benefits;
+const tax = gross * v.tx/100;
+const inhand = gross - tax;
+return {rows:[
+  {k:'CTC', v: inr(v.ctc)},
+  {k:'Benefits (PF/grat.)', v: inr(benefits)},
+  {k:'Taxable gross', v: inr(gross)},
+  {k:'Estimated tax', v: inr(tax)},
+  {k:'Annual in-hand', v: inr(inhand)},
+  {k:'Monthly take-home', v: inr(inhand/12)},
+]};`,
+    notes: 'Approximation; replace effective-tax % with output of the income-tax calc.',
+  },
+  tds: {
+    inputs: [
+      { id: 's', label: 'Annual salary (₹)', type: 'number', default: 1200000, min: 0 },
+      {
+        id: 'reg',
+        label: 'Regime',
+        type: 'select',
+        default: 'new',
+        options: [
+          { value: 'new', label: 'New (FY25-26)' },
+          { value: 'old', label: 'Old' },
+        ],
+      },
+      { id: 'd', label: 'Deductions (old) ₹', type: 'number', default: 150000, min: 0 },
+    ],
+    run: `function newTax(t){let s=Math.max(0,t-300000), tax=0;
+const sl=[[300000,0.05],[300000,0.10],[300000,0.15],[300000,0.20],[Infinity,0.30]];
+let left=s; for (const [w,r] of sl){const x=Math.min(w,left); tax+=x*r; left-=x; if(left<=0)break;}
+return tax;}
+function oldTax(t){let tax=0, sl=[[250000,0],[250000,0.05],[500000,0.20],[Infinity,0.30]], left=t;
+for(const [w,r] of sl){const x=Math.min(w,left); tax+=x*r; left-=x; if(left<=0)break;}
+return tax;}
+const taxable = v.reg==='new' ? v.s - 75000 : v.s - 50000 - v.d;
+const base = v.reg==='new' ? newTax(taxable) : oldTax(taxable);
+const cess = base * 0.04;
+const total = base + cess;
+return {rows:[
+  {k:'Taxable income', v: inr(Math.max(0,taxable))},
+  {k:'Tax (base)', v: inr(base)},
+  {k:'+ Cess (4%)', v: inr(cess)},
+  {k:'Annual TDS', v: inr(total)},
+  {k:'Monthly TDS', v: inr(total/12)},
+]};`,
+    notes: 'New regime FY25-26: std deduction ₹75k; old: ₹50k + your deductions. 4% cess.',
+  },
+  hra: {
+    inputs: [
+      { id: 'b', label: 'Basic salary (₹/yr)', type: 'number', default: 600000, min: 0 },
+      { id: 'h', label: 'HRA received (₹/yr)', type: 'number', default: 240000, min: 0 },
+      { id: 'r', label: 'Rent paid (₹/yr)', type: 'number', default: 300000, min: 0 },
+      {
+        id: 'm',
+        label: 'City type',
+        type: 'select',
+        default: 'metro',
+        options: [
+          { value: 'metro', label: 'Metro (50%)' },
+          { value: 'non', label: 'Non-metro (40%)' },
+        ],
+      },
+    ],
+    run: `const cap = v.b * (v.m==='metro' ? 0.5 : 0.4);
+const excess = Math.max(0, v.r - 0.10*v.b);
+const exempt = Math.min(v.h, cap, excess);
+return {rows:[
+  {k:'HRA received', v: inr(v.h)},
+  {k:'% of basic cap', v: inr(cap)},
+  {k:'Rent − 10% basic', v: inr(excess)},
+  {k:'Exempt (least of 3)', v: inr(exempt)},
+  {k:'Taxable HRA', v: inr(v.h - exempt)},
+]};`,
+    notes: 'Section 10(13A): least of HRA, % of basic, rent − 10% basic.',
+  },
+  gratuity: {
+    inputs: [
+      { id: 'b', label: 'Last basic+DA (₹/mo)', type: 'number', default: 50000, min: 0 },
+      { id: 'y', label: 'Years of service', type: 'number', default: 8, min: 0, step: 0.5 },
+    ],
+    run: `if (v.y < 5) return {rows:[{k:'Not eligible', v:'< 5 years service'}]};
+const yrs = Math.floor(v.y) + ((v.y - Math.floor(v.y)) >= 0.5 ? 1 : 0);
+const g = (15 * v.b * yrs) / 26;
+return {rows:[
+  {k:'Years counted', v: String(yrs)},
+  {k:'Gratuity payable', v: inr(g)},
+  {k:'Formula', v: '15 × basic × yrs / 26'},
+]};`,
+    notes: 'Gratuity Act: 15 days basic/DA per completed year, ÷ 26.',
+  },
+  'leave-encashment': {
+    inputs: [
+      { id: 'b', label: 'Avg basic+DA last 10 mo (₹/mo)', type: 'number', default: 60000, min: 0 },
+      { id: 'l', label: 'Leave balance (days)', type: 'number', default: 90, min: 0 },
+      { id: 'y', label: 'Years of service', type: 'number', default: 12, min: 0 },
+    ],
+    run: `const daily = v.b/30;
+const payment = daily * v.l;
+const cap = Math.min(payment, daily * 30 * v.y, 2500000);
+return {rows:[
+  {k:'Encashment paid', v: inr(payment)},
+  {k:'Exempt (cap ₹25L)', v: inr(cap)},
+  {k:'Taxable', v: inr(Math.max(0, payment - cap))},
+]};`,
+    notes: 'Sec 10(10AA). Non-govt cap ₹25L; govt employees fully exempt.',
+  },
+  gst: {
+    inputs: [
+      { id: 'a', label: 'Amount (₹)', type: 'number', default: 1000, min: 0 },
+      { id: 'r', label: 'GST rate (%)', type: 'number', default: 18, step: 0.5 },
+      {
+        id: 'm',
+        label: 'Mode',
+        type: 'select',
+        default: 'add',
+        options: [
+          { value: 'add', label: 'Exclusive → add GST' },
+          { value: 'rem', label: 'Inclusive → extract GST' },
+        ],
+      },
+    ],
+    run: `let base, gst, total;
+if (v.m === 'add') { base = v.a; gst = base*v.r/100; total = base+gst; }
+else { total = v.a; base = total/(1+v.r/100); gst = total-base; }
+return {rows:[
+  {k:'Base (pre-GST)', v: inr(base)},
+  {k:'GST @ '+v.r+'%', v: inr(gst)},
+  {k:'Total (incl.)', v: inr(total)},
+]};`,
+    notes: 'Add or extract GST. CGST + SGST split = half each for intra-state.',
+  },
+  'income-tax': {
+    inputs: [
+      { id: 'inc', label: 'Gross income (₹/yr)', type: 'number', default: 1500000, min: 0 },
+      { id: 'd', label: 'Deductions (old regime) ₹', type: 'number', default: 150000, min: 0 },
+    ],
+    run: `function newTax(t){let s=Math.max(0,t-300000), tax=0;
+const sl=[[300000,0.05],[300000,0.10],[300000,0.15],[300000,0.20],[Infinity,0.30]];
+let left=s; for (const [w,r] of sl){const x=Math.min(w,left); tax+=x*r; left-=x; if(left<=0)break;}
+return tax;}
+function oldTax(t){let tax=0, sl=[[250000,0],[250000,0.05],[500000,0.20],[Infinity,0.30]], left=t;
+for(const [w,r] of sl){const x=Math.min(w,left); tax+=x*r; left-=x; if(left<=0)break;}
+return tax;}
+const nT = newTax(Math.max(0, v.inc - 75000));
+const oT = oldTax(Math.max(0, v.inc - 50000 - v.d));
+const nF = nT*1.04, oF = oT*1.04;
+return {rows:[
+  {k:'New regime tax (incl. cess)', v: inr(nF)},
+  {k:'Old regime tax (incl. cess)', v: inr(oF)},
+  {k:'Cheaper regime', v: nF < oF ? 'New' : 'Old'},
+  {k:'Savings', v: inr(Math.abs(nF - oF))},
+]};`,
+    notes: 'FY25-26 slabs. New regime std deduction ₹75k; old ₹50k + your deductions. 4% cess applied.',
+  },
+}
+
+const spec = !calc.live && SPECS[calc.slug] ? SPECS[calc.slug] : null
+const inputsForScript = spec ? spec.inputs.map((i) => ({ id: i.id, type: i.type })) : []
+const runBody = spec ? spec.run : ''
 ---
 
 <BaseLayout
@@ -45,7 +599,7 @@ const ledgerLabel = LEDGERS.find((l) => l.key === calc.ledger)?.label ?? ''
       <p class="calc-lede">{calc.brief}.</p>
       <p class="calc-meta mono">
         Ledger: {ledgerLabel} &middot; Status:{' '}
-        <span class="calc-status">{calc.live ? 'live' : 'in preparation'}</span>
+        <span class="calc-status">{calc.live || spec ? 'live' : 'in preparation'}</span>
       </p>
     </header>
 
@@ -57,46 +611,141 @@ const ledgerLabel = LEDGERS.find((l) => l.key === calc.ledger)?.label ?? ''
       </section>
     )}
 
-    {!calc.live && (
+    {spec && (
+      <section class="calc-body calc-generic" aria-label={`${calc.name} calculator`}>
+        <form class="calc-form" id="calc-form" autocomplete="off">
+          <div class="calc-inputs">
+            {spec.inputs.map((inp) => (
+              <label class="calc-field">
+                <span class="calc-field-label mono">{inp.label}</span>
+                {inp.type === 'select' ? (
+                  <select name={inp.id} data-id={inp.id}>
+                    {inp.options?.map((o) => (
+                      <option value={o.value} selected={String(inp.default) === o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="number"
+                    name={inp.id}
+                    data-id={inp.id}
+                    value={inp.default}
+                    step={inp.step ?? 'any'}
+                    min={inp.min}
+                    max={inp.max}
+                  />
+                )}
+              </label>
+            ))}
+          </div>
+          <div class="calc-output" aria-live="polite">
+            <div id="calc-error" class="calc-error" role="alert" hidden></div>
+            <table class="calc-results">
+              <tbody id="calc-rows"></tbody>
+            </table>
+          </div>
+        </form>
+
+        <p class="calc-notes">
+          <span class="mono">Note:</span> {spec.notes} Computed in your browser; inputs never leave the page.
+        </p>
+      </section>
+    )}
+
+    {!calc.live && !spec && (
       <section class="calc-stub" aria-label="In preparation">
         <h2 class="stub-h mono">In preparation</h2>
         <p>
           This calculator's math is documented; the page is being wired up.
-          Until then, the SIP calculator is a working reference of how each
-          page on the site is shaped — three columns (inputs / result + chart
-          / formula), full-width year-by-year ledger, double-rule totals row.
         </p>
         <p>
           <a class="stub-cta" href="/calculators/sip/">Open the SIP calculator →</a>
         </p>
-
-        <h2 class="stub-h stub-h-2 mono">What this will compute</h2>
-        <p class="stub-brief">{calc.brief}.</p>
-
-        {/*
-          The calculator catalogue at the bottom is itself a leader-dotted
-          TOC — same component, same ledger groupings — so a visitor who
-          lands here can still browse every calculator without going home.
-        */}
-        <h2 class="stub-h stub-h-2 mono">Other calculators</h2>
-        {LEDGERS.map((l) => (
-          <div class="stub-ledger">
-            <h3 class="stub-ledger-h mono">{l.label}</h3>
-            <ul class="stub-list">
-              {CALCULATORS.filter((c) => c.ledger === l.key).map((c) => (
-                <li>
-                  <a class="toc-row" href={`/calculators/${c.slug}/`}>
-                    <span class="toc-name">{c.name}</span>
-                    <span class="toc-value mono">{c.live ? 'live' : 'soon'}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
       </section>
     )}
+
+    <section class="calc-stub" aria-label="Other calculators">
+      <h2 class="stub-h stub-h-2 mono">Other calculators</h2>
+      {LEDGERS.map((l) => (
+        <div class="stub-ledger">
+          <h3 class="stub-ledger-h mono">{l.label}</h3>
+          <ul class="stub-list">
+            {CALCULATORS.filter((c) => c.ledger === l.key).map((c) => (
+              <li>
+                <a class="toc-row" href={`/calculators/${c.slug}/`}>
+                  <span class="toc-name">{c.name}</span>
+                  <span class="toc-value mono">{c.live || SPECS[c.slug] ? 'live' : 'soon'}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
   </article>
+
+  {spec && (
+    <script is:inline define:vars={{ inputsForScript, runBody }}>
+      (() => {
+        const form = document.getElementById('calc-form')
+        if (!form) return
+        const rowsEl = document.getElementById('calc-rows')
+        const errEl = document.getElementById('calc-error')
+        const inr = (n) =>
+          '₹' +
+          (Number.isFinite(n) ? n : 0).toLocaleString('en-IN', { maximumFractionDigits: 0 })
+        let runner
+        try {
+          runner = new Function('v', 'inr', runBody)
+        } catch (e) {
+          errEl.hidden = false
+          errEl.textContent = 'Could not initialise calculator.'
+          return
+        }
+        function recompute() {
+          errEl.hidden = true
+          errEl.textContent = ''
+          const v = {}
+          for (const i of inputsForScript) {
+            const el = form.querySelector('[data-id="' + i.id + '"]')
+            if (!el) continue
+            v[i.id] = i.type === 'select' ? el.value : Number(el.value)
+            if (i.type !== 'select' && !Number.isFinite(v[i.id])) {
+              errEl.hidden = false
+              errEl.textContent = 'Enter a valid number for ' + i.id
+              return
+            }
+          }
+          let result
+          try {
+            result = runner(v, inr)
+          } catch (e) {
+            errEl.hidden = false
+            errEl.textContent = 'Calculation failed: ' + (e && e.message ? e.message : 'error')
+            return
+          }
+          rowsEl.innerHTML = ''
+          for (const r of result.rows) {
+            const tr = document.createElement('tr')
+            const k = document.createElement('th')
+            k.scope = 'row'
+            k.textContent = r.k
+            const td = document.createElement('td')
+            td.className = 'mono'
+            td.textContent = r.v
+            tr.appendChild(k)
+            tr.appendChild(td)
+            rowsEl.appendChild(tr)
+          }
+        }
+        form.addEventListener('input', recompute)
+        form.addEventListener('change', recompute)
+        recompute()
+      })()
+    </script>
+  )}
 </BaseLayout>
 
 <style>
@@ -161,6 +810,84 @@ const ledgerLabel = LEDGERS.find((l) => l.key === calc.ledger)?.label ?? ''
     padding-top: 2rem;
   }
 
+  .calc-generic .calc-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  @media (min-width: 760px) {
+    .calc-generic .calc-form {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  .calc-inputs {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+  .calc-field {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .calc-field-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mute);
+    font-family: var(--font-mono);
+  }
+  .calc-field input,
+  .calc-field select {
+    font: inherit;
+    font-family: var(--font-mono);
+    font-feature-settings: 'tnum' 1, 'zero' 1;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    border-radius: 2px;
+  }
+  .calc-field input:focus,
+  .calc-field select:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .calc-output {
+    align-self: start;
+  }
+  .calc-results {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .calc-results th,
+  .calc-results td {
+    padding: 0.5rem 0.25rem;
+    text-align: left;
+    border-bottom: 1px dashed var(--ink-mute);
+    font-weight: 400;
+  }
+  .calc-results th {
+    color: var(--ink-mute);
+    font-size: 0.9rem;
+  }
+  .calc-results td {
+    text-align: right;
+    color: var(--ink);
+  }
+  .calc-error {
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+  }
+  .calc-notes {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--ink-mute);
+    max-width: 64ch;
+    line-height: 1.6;
+  }
+
   .calc-stub {
     padding-top: 2rem;
     color: var(--ink);
@@ -216,3 +943,4 @@ const ledgerLabel = LEDGERS.find((l) => l.key === calc.ledger)?.label ?? ''
     }
   }
 </style>
+</content>

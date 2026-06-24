@@ -14,6 +14,7 @@ import '~/styles/global.css'
 import '~/styles/oriz-ui-overrides.css'
 import '@chirag127/astro-shell/tokens.css'
 import FamilyChrome from '@chirag127/astro-shell/components/FamilyChrome.astro'
+import FamilySidebar from '@chirag127/astro-shell/components/FamilySidebar.astro'
 import BottomBar from '@chirag127/astro-chrome/BottomBar.astro'
 import ConsentBanner from '@chirag127/astro-chrome/ConsentBanner.astro'
 import Footer from '@chirag127/astro-chrome/Footer.astro'
@@ -110,7 +111,39 @@ const cfAnalyticsEnabled = import.meta.env.PUBLIC_ENABLE_CF_ANALYTICS === 'true'
       <AppSidebarContent />
     </Sidebar>
     <main id="main">
-      <slot />
+      <div class="oriz-shell">
+        <FamilySidebar slug="oriz-paisa-finance-tools-app" title="Finance Tools">
+          <a slot="tools" href="/calculators/sip/">SIP</a>
+          <a slot="tools" href="/calculators/lumpsum/">Lumpsum</a>
+          <a slot="tools" href="/calculators/step-up-sip/">Step-up SIP</a>
+          <a slot="tools" href="/calculators/swp/">SWP</a>
+          <a slot="tools" href="/calculators/cagr/">CAGR / XIRR</a>
+          <a slot="tools" href="/calculators/goal-planner/">Goal planner</a>
+          <a slot="tools" href="/calculators/fire/">FIRE</a>
+          <a slot="tools" href="/calculators/home-loan-emi/">Home loan EMI</a>
+          <a slot="tools" href="/calculators/car-loan/">Car loan</a>
+          <a slot="tools" href="/calculators/personal-loan/">Personal loan</a>
+          <a slot="tools" href="/calculators/prepayment-impact/">Prepayment impact</a>
+          <a slot="tools" href="/calculators/loan-comparison/">Loan comparison</a>
+          <a slot="tools" href="/calculators/eligibility-foir/">Eligibility / FOIR</a>
+          <a slot="tools" href="/calculators/fd/">FD</a>
+          <a slot="tools" href="/calculators/rd/">RD</a>
+          <a slot="tools" href="/calculators/ppf/">PPF</a>
+          <a slot="tools" href="/calculators/nps/">NPS</a>
+          <a slot="tools" href="/calculators/nsc/">NSC</a>
+          <a slot="tools" href="/calculators/ssy/">SSY</a>
+          <a slot="tools" href="/calculators/compound-interest/">Compound interest</a>
+          <a slot="tools" href="/calculators/savings-goal/">Savings goal</a>
+          <a slot="tools" href="/calculators/take-home/">Take-home (CTC)</a>
+          <a slot="tools" href="/calculators/tds/">TDS</a>
+          <a slot="tools" href="/calculators/hra/">HRA exemption</a>
+          <a slot="tools" href="/calculators/gratuity/">Gratuity</a>
+          <a slot="tools" href="/calculators/leave-encashment/">Leave encashment</a>
+          <a slot="tools" href="/calculators/gst/">GST</a>
+          <a slot="tools" href="/calculators/income-tax/">Income tax</a>
+        </FamilySidebar>
+        <div class="oriz-main"><slot /></div>
+      </div>
     </main>
     <Footer />
     <BottomBar actions={bottomBarActions} />
